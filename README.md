@@ -8,6 +8,10 @@ look-router 的目标是：在移动端单页应用（SPA）中打造良好的�
 
 这样的用户体验确实不够好，在 App 中，则不会有这种体验。而使用 [MoreJS](https://mor.ele.me/) 的[饿了么](https://h5.ele.me/)移动端 Web 路由切换则达成了这样的要求。
 
+但是 MoreJS 却采用小程序 DSL 进行开发，对于偏爱 JSX 的开发者来说则显得不那么有趣了。所以才尝试写一个 look-router，
+
+> 当然，你也可以不考虑 look-router，尝试对 [MoreJS](https://mor.ele.me/) 的路由模块进行移植可能也会是一个可行的方案。
+
 ## 使用
 
 ```tsx
