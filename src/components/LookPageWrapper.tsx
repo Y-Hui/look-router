@@ -20,6 +20,7 @@ const LookPageWrapper: FC<LookPageWrapperProps> = (props) => {
   const listeners = useRef(new Set<(visible: boolean) => void>())
   const state = useMemo<LookPageCtxState>(() => {
     return {
+      instance: data,
       listenVisible(listener) {
         listeners.current.add(listener)
         return () => {
@@ -27,7 +28,7 @@ const LookPageWrapper: FC<LookPageWrapperProps> = (props) => {
         }
       },
     }
-  }, [])
+  }, [data])
 
   useEffect(() => {
     listeners.current.forEach((fn) => fn(visible))

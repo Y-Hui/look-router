@@ -18,6 +18,7 @@ export function useRouterCtx(hookName: string) {
 }
 
 export interface LookPageCtxState {
+  instance: PageInstance
   listenVisible: (listener: (visible: boolean) => void) => () => void
 }
 

@@ -51,8 +51,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 - [x] 嵌套路由
 - [x] useNavigate
 - [ ] useParams
-- [x] useWatchVisible
 - [ ] 路由参数匹配
+- [x] useSearchParams
+- [x] useWatchVisible
 - [x] `<Link />`
 - [x] `<RouterView />`
 
@@ -61,5 +62,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 - [x] 自定义路由页面渲染容器（pageComponent）
 - [x] switch 页面（切换页面而不销毁，并且不添加历史记录，适用于使用嵌套路由实现的 TabBar）
 - [ ] redirectTo
-- [ ] 路由 meta
+- [x] 路由 meta
 
