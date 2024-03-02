@@ -23,4 +23,8 @@ export interface NestRouteObject extends Omit<RouteObjectBase, 'component' | 'ch
 
 export type RouteObject = RouteObjectBase | NestRouteObject
 
-export type InnerRouteObject = { $$score: number; parent?: string } & RouteObject
+export type InnerRouteObject = {
+  $$score: number
+  parent?: string
+  raw: RouteObject
+} & RouteObject

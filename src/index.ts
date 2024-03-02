@@ -1,6 +1,7 @@
 export { default as Link } from './components/Link'
 export { default as LookPage } from './components/LookPage'
 export { default as Outlet } from './components/Outlet'
+export type { RouterChangeEventArgs } from './components/RouterView'
 export { default as RouterView } from './components/RouterView'
 export * from './hooks/useNavigate'
 export * from './hooks/useParams'

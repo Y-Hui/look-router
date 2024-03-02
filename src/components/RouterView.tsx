@@ -1,3 +1,4 @@
+import type { Location } from 'history'
 import type { FC, ReactNode } from 'react'
 import { useEffect, useMemo } from 'react'
 import { useSyncExternalStore } from 'use-sync-external-store/shim'
@@ -9,14 +10,15 @@ import type { RouterViewCtxState } from './context'
 import { RouterViewCtx } from './context'
 import LookPageWrapper from './LookPageWrapper'
 
-export interface RouterChangeEventArgs extends Omit<Partial<RouteObject>, 'pathname'> {
-  pathname: string
+export interface RouterChangeEventArgs {
+  location: Location
+  route: RouteObject
 }
 
 export interface RouterViewProps {
   router: LookRouter
   children?: ReactNode
-  onChange?: (e: RouterChangeEventArgs) => number
+  onChange?: (e: RouterChangeEventArgs) => void
 }
 
 const RouterView: FC<RouterViewProps> = (props) => {
@@ -31,14 +33,13 @@ const RouterView: FC<RouterViewProps> = (props) => {
     return { router }
   }, [router])
 
-  // TODO:
   const onChange = useLatestFn(onChangeImpl)
 
   useEffect(() => {
-    return router.listen((e) => {
-      // TODO:
+    return router.listen((location, route) => {
+      onChange?.({ location, route })
     })
-  }, [router])
+  }, [router, onChange])
 
   return (
     <div className="look-router-hosts" style={{ overflow: 'hidden', height: '100vh' }}>

@@ -71,9 +71,12 @@ export default class LookRouter {
 
   private action = createState(Action.Pop)
 
+  private initTriggerListener = false
+
   private init = () => {
-    this.action.setState(Action.Push)
-    this.listenImpl({ action: HistoryAction.Push, location: this.instance.location })
+    this.initTriggerListener = true
+    this.action.setState(Action.Replace)
+    this.listenImpl({ action: HistoryAction.Replace, location: this.instance.location })
   }
 
   clean = () => {
@@ -139,12 +142,22 @@ export default class LookRouter {
     }
   }
 
-  listen = (listener: (location: Location, action: Action) => void) => {
+  private dispatchListener = (
+    location: Location,
+    listener: (location: Location, route: RouteObject) => void,
+  ) => {
+    const matches = getMatches(location.pathname, this.flattenRoutes)
+    listener?.(location, matches[matches.length - 1]!.raw!)
+  }
+
+  listen = (listener: (location: Location, route: RouteObject) => void) => {
+    if (this.initTriggerListener) {
+      this.initTriggerListener = false
+      this.dispatchListener(this.instance.location, listener)
+    }
     return this.instance.listen((e) => {
-      const { location } = e
-      const currentAction = this.action.getState()
+      this.dispatchListener(e.location, listener)
       this.listenImpl(e)
-      listener(location, currentAction)
     })
   }
 

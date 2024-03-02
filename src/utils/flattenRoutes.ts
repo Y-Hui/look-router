@@ -64,6 +64,7 @@ export function flattenRoutes(routes: RouteObject[]): InnerRouteObject[] {
 
       result.push({
         ...route,
+        raw: route,
         $$score: computeScore(route.path),
         parent,
       })
