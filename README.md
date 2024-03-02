@@ -59,7 +59,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   - [x] 基础功能
   - [ ] onChange
 - [x] 自定义路由页面渲染容器（pageComponent）
-- [ ] switch 页面（切换页面而不销毁，并且不添加历史记录，适用于使用嵌套路由实现的 TabBar）
+- [x] switch 页面（切换页面而不销毁，并且不添加历史记录，适用于使用嵌套路由实现的 TabBar）
 - [ ] redirectTo
 - [ ] 路由 meta
 

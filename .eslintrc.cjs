@@ -48,7 +48,7 @@ module.exports = {
     'no-shadow': 0,
     '@typescript-eslint/no-shadow': ['error'],
     camelcase: 0,
-    'no-unused-vars': [1, { vars: 'all', args: 'none', ignoreRestSiblings: true }],
+    'no-unused-vars': 0,
     '@typescript-eslint/no-unused-vars': [
       1,
       { vars: 'all', args: 'none', ignoreRestSiblings: true },

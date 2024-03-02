@@ -12,10 +12,25 @@ type AnchorHTMLProps = DetailedHTMLProps<
 export interface LinkProps extends Omit<AnchorHTMLProps, 'href'> {
   to: To
   replace?: boolean
+  /**
+   * 保留当前页面，并切换到新的页面
+   * replace 与 switch 同时存在时 switch 权重更高
+   */
+  switch?: boolean
+  /** 清空其他页面 */
+  clean?: boolean
 }
 
 function Link(props: LinkProps, ref: ForwardedRef<HTMLAnchorElement>) {
-  const { onClick, to, replace = false, children, ...rest } = props
+  const {
+    onClick,
+    to,
+    replace = false,
+    children,
+    switch: switchMode = false,
+    clean = false,
+    ...rest
+  } = props
 
   const { router } = useRouterCtx('<Link />')
   const navigate = useNavigate()
@@ -27,9 +42,9 @@ function Link(props: LinkProps, ref: ForwardedRef<HTMLAnchorElement>) {
       onClick={(e) => {
         e.preventDefault()
         e.stopPropagation()
-        navigate(to, { replace })
+        navigate(to, { replace, switch: switchMode, clean })
       }}
-      href={router.createHref(to)}
+      href={router.instance.createHref(to)}
     >
       {children}
     </a>

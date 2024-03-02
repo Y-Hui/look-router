@@ -1,10 +1,10 @@
 import type { FC, ReactNode } from 'react'
-import { useEffect, useMemo, useReducer } from 'react'
+import { useEffect, useMemo } from 'react'
+import { useSyncExternalStore } from 'use-sync-external-store/shim'
 
 import { useLatestFn } from '../hooks/useLatestFn'
-import stack from '../utils/pageStack'
-import type { RouteObject, Router } from '../utils/routerImpl'
-import { routerListener } from '../utils/routerListener'
+import type LookRouter from '../state'
+import type { RouteObject } from '../utils/routerImpl'
 import type { RouterViewCtxState } from './context'
 import { RouterViewCtx } from './context'
 import LookPageWrapper from './LookPageWrapper'
@@ -14,13 +14,18 @@ export interface RouterChangeEventArgs extends Omit<Partial<RouteObject>, 'pathn
 }
 
 export interface RouterViewProps {
-  router: Router
+  router: LookRouter
   children?: ReactNode
   onChange?: (e: RouterChangeEventArgs) => number
 }
 
 const RouterView: FC<RouterViewProps> = (props) => {
   const { router, onChange: onChangeImpl, children } = props
+
+  const routerStack = useSyncExternalStore(
+    router.stack.addListener,
+    router.stack.getSnapshot,
+  )
 
   const state = useMemo<RouterViewCtxState>(() => {
     return { router }
@@ -29,12 +34,9 @@ const RouterView: FC<RouterViewProps> = (props) => {
   // TODO:
   const onChange = useLatestFn(onChangeImpl)
 
-  const [, forceUpdate] = useReducer((x) => !x, true)
   useEffect(() => {
     return router.listen((e) => {
-      const { location, action } = e
-      routerListener(location, action, router.flattenRoutes)
-      forceUpdate()
+      // TODO:
     })
   }, [router])
 
@@ -42,7 +44,7 @@ const RouterView: FC<RouterViewProps> = (props) => {
     <div className="look-router-hosts" style={{ overflow: 'hidden', height: '100vh' }}>
       <RouterViewCtx.Provider value={state}>
         {children}
-        {stack.value.map((item) => {
+        {routerStack.map((item) => {
           return <LookPageWrapper key={item.key} data={item} />
         })}
       </RouterViewCtx.Provider>

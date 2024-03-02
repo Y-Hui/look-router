@@ -1,20 +1,12 @@
-import { Action, createBrowserHistory, createHashHistory } from 'history'
-
-import { flattenRoutes } from './flattenRoutes'
-import type { RouteObject, Router } from './routerImpl'
-import { routerListener } from './routerListener'
+import LookRouter from '../state'
+import type { RouteObject } from './routerImpl'
 
 export interface CreateRouterArgs {
   mode?: 'hash' | 'history'
   routes: RouteObject[]
 }
 
-export function createRouter(args: CreateRouterArgs): Router {
+export function createRouter(args: CreateRouterArgs): LookRouter {
   const { mode = 'hash', routes } = args
-  const router = mode === 'history' ? createBrowserHistory() : createHashHistory()
-
-  const _flattenRoutes = flattenRoutes(routes)
-  routerListener(router.location, Action.Push, _flattenRoutes)
-
-  return { ...router, mode, routes, flattenRoutes: _flattenRoutes }
+  return new LookRouter({ mode, routes })
 }

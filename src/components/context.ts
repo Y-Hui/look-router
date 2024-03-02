@@ -1,10 +1,10 @@
 import { createContext, useContext } from 'react'
 
+import type LookRouter from '../state'
 import type { PageInstance } from '../types'
-import type { Router } from '../utils/routerImpl'
 
 export interface RouterViewCtxState {
-  router: Router
+  router: LookRouter
 }
 
 export const RouterViewCtx = createContext<RouterViewCtxState | null>(null)
