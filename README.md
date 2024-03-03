@@ -50,8 +50,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 - [x] createRouter
 - [x] 嵌套路由
 - [x] useNavigate
-- [ ] useParams
-- [ ] 路由参数匹配
+- [x] useParams
+- [x] 路由参数匹配
 - [x] useSearchParams
 - [x] useWatchVisible
 - [x] `<Link />`

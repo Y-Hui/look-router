@@ -6,6 +6,7 @@ import type { InternalRouteObject, LookStackPage, RouteObject } from '../types'
 import { flattenRoutes } from '../utils/flattenRoutes'
 import type { LookHistoryItem } from './history'
 import LookHistory from './history'
+import { getMatches } from './matches'
 import { renderSinglePage, renderWithNestPage } from './render'
 import LookStack from './stack'
 
@@ -29,24 +30,6 @@ function createState<T>(initialValue: T) {
       scope.current = initialValue
     },
   }
-}
-
-function getMatches(pathname: string, routes: InternalRouteObject[]) {
-  const result: InternalRouteObject[] = []
-
-  let match: string | undefined = pathname
-  while (match !== undefined) {
-    // eslint-disable-next-line no-loop-func
-    const item = routes.find((v) => v.path === match!)
-    if (item !== undefined) {
-      match = item.parent
-      result.push(item)
-    } else {
-      break
-    }
-  }
-
-  return result.reverse()
 }
 
 export default class LookRouter {

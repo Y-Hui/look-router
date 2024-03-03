@@ -1,4 +1,5 @@
 import type { InternalRouteObject, RouteObject } from '../types'
+import { compilePath } from './compilePath'
 
 const paramRe = /^:\w+$/
 const dynamicSegmentValue = 3
@@ -62,11 +63,15 @@ export function flattenRoutes(routes: RouteObject[]): InternalRouteObject[] {
         currentNestRoot = currentNestRoot.filter((x) => x !== route)
       }
 
+      const { matcher, compiledParams } = compilePath(route.path)
       result.push({
         ...route,
         raw: route,
         $$score: computeScore(route.path),
         parent,
+        matcher,
+        compiledParams,
+        match: (pathname: string) => matcher.test(pathname),
       })
     }
   }

@@ -1,4 +1,4 @@
-import type { InternalRouteObject, LookStackPage } from '../types'
+import type { InternalRouteObject, LookStackPage, Mutable, Params } from '../types'
 import forEachRight from '../utils/forEachRight'
 import { globalKey } from '../utils/globalKey'
 
@@ -10,11 +10,42 @@ type RenderPageArgs = {
   search?: string
 }
 
-function renderPage(args: RenderPageArgs) {
+function renderPage(args: RenderPageArgs): LookStackPage {
   const { route, children, parent, search, pathname } = args
 
   if (typeof route !== 'object' || route === null || !route?.component) {
     throw Error('[look-router]: Route does not exist')
+  }
+
+  const { matcher, compiledParams } = route
+
+  const match = pathname.match(matcher)
+
+  let params: Params | undefined
+
+  if (match) {
+    const matchedPathname = match[0]
+    let pathnameBase = matchedPathname?.replace(/(.)\/+$/, '$1')
+    const captureGroups = match?.slice(1)
+    params = compiledParams.reduce<Mutable<Params>>(
+      (memo, { paramName, isOptional }, index) => {
+        if (paramName === '*') {
+          const splatValue = captureGroups[index] || ''
+          pathnameBase = matchedPathname
+            .slice(0, matchedPathname.length - splatValue.length)
+            .replace(/(.)\/+$/, '$1')
+        }
+
+        const value = captureGroups[index]
+        if (isOptional && !value) {
+          memo[paramName] = undefined
+        } else {
+          memo[paramName] = (value || '').replace(/%2F/g, '/')
+        }
+        return memo
+      },
+      {},
+    )
   }
 
   return {
@@ -26,8 +57,7 @@ function renderPage(args: RenderPageArgs) {
     parent,
 
     search,
-    // TODO:
-    // params,
+    params,
     route,
   }
 }
