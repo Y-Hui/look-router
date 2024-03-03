@@ -5,7 +5,7 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim'
 
 import { useLatestFn } from '../hooks/useLatestFn'
 import type LookRouter from '../state'
-import type { RouteObject } from '../utils/routerImpl'
+import type { RouteObject } from '../types'
 import type { RouterViewCtxState } from './context'
 import { RouterViewCtx } from './context'
 import LookPageWrapper from './LookPageWrapper'

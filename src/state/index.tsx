@@ -2,9 +2,8 @@
 import type { History as HistoryImpl, Location, To, Update } from 'history'
 import { Action as HistoryAction, createBrowserHistory, createHashHistory } from 'history'
 
-import type { PageInstance } from '../types'
+import type { InternalRouteObject, LookStackPage, RouteObject } from '../types'
 import { flattenRoutes } from '../utils/flattenRoutes'
-import type { InnerRouteObject, RouteObject } from '../utils/routerImpl'
 import type { LookHistoryItem } from './history'
 import LookHistory from './history'
 import { renderSinglePage, renderWithNestPage } from './render'
@@ -32,8 +31,8 @@ function createState<T>(initialValue: T) {
   }
 }
 
-function getMatches(pathname: string, routes: InnerRouteObject[]) {
-  const result: InnerRouteObject[] = []
+function getMatches(pathname: string, routes: InternalRouteObject[]) {
+  const result: InternalRouteObject[] = []
 
   let match: string | undefined = pathname
   while (match !== undefined) {
@@ -57,7 +56,7 @@ export default class LookRouter {
 
   stack = new LookStack()
 
-  flattenRoutes: InnerRouteObject[]
+  flattenRoutes: InternalRouteObject[]
 
   routes: RouteObject[]
 
@@ -163,8 +162,8 @@ export default class LookRouter {
 
   private static renderRoute = (
     location: Location,
-    matches: InnerRouteObject[],
-  ): PageInstance[] => {
+    matches: InternalRouteObject[],
+  ): LookStackPage[] => {
     const { pathname, search } = location
     if (matches.length > 1) {
       return renderWithNestPage({ matches, search, pathname })
@@ -173,7 +172,7 @@ export default class LookRouter {
     return [result]
   }
 
-  private routerPush = (location: Location, matches: InnerRouteObject[]) => {
+  private routerPush = (location: Location, matches: InternalRouteObject[]) => {
     const { pathname, search } = location
     const args = { pathname, search }
 
@@ -193,7 +192,7 @@ export default class LookRouter {
     this.stack.visible(args)
   }
 
-  private routerReplace = (location: Location, matches: InnerRouteObject[]) => {
+  private routerReplace = (location: Location, matches: InternalRouteObject[]) => {
     // 此参数为要展示的页面
     const { pathname, search } = location
     const args = { pathname, search }
@@ -206,7 +205,7 @@ export default class LookRouter {
     this.stack.visible(args)
   }
 
-  private routerPop = (location: Location, matches: InnerRouteObject[]) => {
+  private routerPop = (location: Location, matches: InternalRouteObject[]) => {
     // 此参数为要展示的页面
     const { pathname, search } = location
 
@@ -223,7 +222,7 @@ export default class LookRouter {
     this.stack.visible({ pathname, search })
   }
 
-  private routerSwitch = (location: Location, matches: InnerRouteObject[]) => {
+  private routerSwitch = (location: Location, matches: InternalRouteObject[]) => {
     // 此参数为要展示的页面
     const { pathname, search } = location
     const args = { pathname, search }
@@ -237,8 +236,8 @@ export default class LookRouter {
     this.stack.visible(args)
   }
 
-  static transformPageInstanceToMap(pages: PageInstance[]) {
-    const result = new Map<string, PageInstance>()
+  static transformLookStackPageToMap(pages: LookStackPage[]) {
+    const result = new Map<string, LookStackPage>()
     pages.forEach((item) => {
       const key = LookHistory.encode({
         pathname: item.pathname,
@@ -250,20 +249,20 @@ export default class LookRouter {
   }
 
   private diff = (
-    oldPages: PageInstance[],
-    newPages: PageInstance[],
+    oldPages: LookStackPage[],
+    newPages: LookStackPage[],
     popped?: LookHistoryItem,
   ) => {
     if (oldPages.length === 0) {
       return newPages
     }
-    const newPagesMap = LookRouter.transformPageInstanceToMap(newPages)
+    const newPagesMap = LookRouter.transformLookStackPageToMap(newPages)
 
-    const getChildren = (pages: PageInstance[], parent: PageInstance) => {
+    const getChildren = (pages: LookStackPage[], parent: LookStackPage) => {
       return pages.filter((item) => item.route.parent === parent.route.path)
     }
 
-    const result: PageInstance[] = []
+    const result: LookStackPage[] = []
 
     oldPages.forEach((item) => {
       const key = LookHistory.encode({

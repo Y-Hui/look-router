@@ -1,7 +1,7 @@
 import { createContext, useContext } from 'react'
 
 import type LookRouter from '../state'
-import type { PageInstance } from '../types'
+import type { LookStackPage } from '../types'
 
 export interface RouterViewCtxState {
   router: LookRouter
@@ -18,7 +18,7 @@ export function useRouterCtx(hookName: string) {
 }
 
 export interface LookPageCtxState {
-  instance: PageInstance
+  instance: LookStackPage
   listenVisible: (listener: (visible: boolean) => void) => () => void
 }
 
@@ -32,7 +32,7 @@ export function useLookPageCtx(hookName: string) {
   return ctx
 }
 
-export const OutletContext = createContext<PageInstance[] | null>(null)
+export const OutletContext = createContext<LookStackPage[] | null>(null)
 OutletContext.displayName = 'OutletContext'
 
 export function useOutletCtx() {

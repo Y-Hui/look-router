@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-plusplus */
-import type { PageInstance, Part } from '../types'
+import type { LookStackPage, Part } from '../types'
 import { globalKey } from '../utils/globalKey'
 
 interface QueryItem {
@@ -10,17 +10,17 @@ interface QueryItem {
 }
 
 export default class LookStack {
-  stack: PageInstance[]
+  stack: LookStackPage[]
 
   // 页面只渲染顶级路由，子路由在各自页面中渲染
-  value: PageInstance[]
+  value: LookStackPage[]
 
   constructor() {
     this.stack = []
     this.value = []
   }
 
-  static create(instance: Part<Omit<PageInstance, 'key'>, 'visible'>): PageInstance {
+  static create(instance: Part<Omit<LookStackPage, 'key'>, 'visible'>): LookStackPage {
     return {
       ...instance,
       visible: instance.visible || false,
@@ -35,7 +35,7 @@ export default class LookStack {
     return v1.pathname === v2.pathname && v1.search === v2.search
   }
 
-  setStack = (value: PageInstance[]) => {
+  setStack = (value: LookStackPage[]) => {
     this.stack = value
     this.value = this.stack.filter((item) => item.parent === undefined)
   }
@@ -45,7 +45,7 @@ export default class LookStack {
   }
 
   findIndex = (
-    callback: (value: PageInstance, index: number, obj: PageInstance[]) => unknown,
+    callback: (value: LookStackPage, index: number, obj: LookStackPage[]) => unknown,
   ) => {
     return this.stack.findIndex(callback)
   }
@@ -64,12 +64,12 @@ export default class LookStack {
     return undefined
   }
 
-  push = (...items: PageInstance[]) => {
+  push = (...items: LookStackPage[]) => {
     this.setStack([...this.stack, ...items])
   }
 
-  static getParents(page: PageInstance, withSelf = true): PageInstance[] {
-    const result: PageInstance[] = withSelf ? [page] : []
+  static getParents(page: LookStackPage, withSelf = true): LookStackPage[] {
+    const result: LookStackPage[] = withSelf ? [page] : []
     let { parent } = page
     while (parent !== undefined) {
       result.unshift(parent)
@@ -88,7 +88,7 @@ export default class LookStack {
     return route
   }
 
-  update = (index: number, value: PageInstance) => {
+  update = (index: number, value: LookStackPage) => {
     this.stack[index] = value
   }
 

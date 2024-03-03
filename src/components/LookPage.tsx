@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react'
 import { Suspense, useRef } from 'react'
 
-import type { PageComponentProps } from '../utils/routerImpl'
+import type { PageComponentProps } from '../types'
 
 export interface LookPageProps extends PageComponentProps {
   noStyle?: boolean

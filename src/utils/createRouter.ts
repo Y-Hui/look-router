@@ -1,5 +1,5 @@
 import LookRouter from '../state'
-import type { RouteObject } from './routerImpl'
+import type { RouteObject } from '../types/index'
 
 export interface CreateRouterArgs {
   mode?: 'hash' | 'history'

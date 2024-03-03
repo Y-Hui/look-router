@@ -1,15 +1,12 @@
-/* eslint-disable no-param-reassign */
-
-import type { PageInstance } from '../types'
-import { createPageInstance } from '../utils/createPageInstance'
+import type { InternalRouteObject, LookStackPage } from '../types'
 import forEachRight from '../utils/forEachRight'
-import type { InnerRouteObject } from '../utils/routerImpl'
+import { globalKey } from '../utils/globalKey'
 
 type RenderPageArgs = {
   pathname: string
-  route: InnerRouteObject
-  children?: PageInstance[]
-  parent?: PageInstance
+  route: InternalRouteObject
+  children?: LookStackPage[]
+  parent?: LookStackPage
   search?: string
 }
 
@@ -20,7 +17,10 @@ function renderPage(args: RenderPageArgs) {
     throw Error('[look-router]: Route does not exist')
   }
 
-  return createPageInstance({
+  return {
+    visible: false,
+    key: globalKey.new(),
+
     pathname,
     children,
     parent,
@@ -29,30 +29,30 @@ function renderPage(args: RenderPageArgs) {
     // TODO:
     // params,
     route,
-  })
+  }
 }
 
 interface RenderArgs {
   pathname: string
   search: string
-  matches: InnerRouteObject[]
+  matches: InternalRouteObject[]
 }
 
-export function renderSinglePage(args: RenderArgs): PageInstance {
+export function renderSinglePage(args: RenderArgs): LookStackPage {
   const { matches, search, pathname } = args
   return renderPage({ route: matches[0], search, pathname })
 }
 
-export function renderWithNestPage(args: RenderArgs): PageInstance[] {
+export function renderWithNestPage(args: RenderArgs): LookStackPage[] {
   const { matches, search, pathname } = args
-  const result: PageInstance[] = []
+  const result: LookStackPage[] = []
 
-  let children: PageInstance[] | undefined
+  let children: LookStackPage[] | undefined
   const getChildren = () => {
     if (!Array.isArray(children)) return undefined
     return children.slice()
   }
-  const updateChildren = (value: PageInstance) => {
+  const updateChildren = (value: LookStackPage) => {
     if (Array.isArray(children)) {
       children.push(value)
       return
@@ -73,6 +73,7 @@ export function renderWithNestPage(args: RenderArgs): PageInstance[] {
   })
 
   forEachRight(result, (item) => {
+    // eslint-disable-next-line no-param-reassign
     item.parent = result.find((x) => x.route.path === item.route.parent)
   })
 

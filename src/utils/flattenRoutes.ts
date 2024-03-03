@@ -1,4 +1,4 @@
-import type { InnerRouteObject, RouteObject } from './routerImpl'
+import type { InternalRouteObject, RouteObject } from '../types'
 
 const paramRe = /^:\w+$/
 const dynamicSegmentValue = 3
@@ -35,9 +35,9 @@ function computeScore(path: string, index?: boolean) {
     }, initialScore)
 }
 
-export function flattenRoutes(routes: RouteObject[]): InnerRouteObject[] {
+export function flattenRoutes(routes: RouteObject[]): InternalRouteObject[] {
   let stack = routes.slice()
-  const result: InnerRouteObject[] = []
+  const result: InternalRouteObject[] = []
 
   let currentNestRoot: RouteObject[] = []
   while (stack.length >= 1) {

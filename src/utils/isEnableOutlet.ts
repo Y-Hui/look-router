@@ -1,4 +1,4 @@
-import type { RouteObject } from './routerImpl'
+import type { RouteObject } from '../types'
 
 export default function isEnableOutlet(page?: RouteObject) {
   if (!page) return false

@@ -1,14 +1,14 @@
 import type { FC } from 'react'
 import { createElement, useEffect, useMemo, useRef } from 'react'
 
-import type { PageInstance } from '../types'
+import type { LookStackPage } from '../types'
 import isEnableOutlet from '../utils/isEnableOutlet'
 import type { LookPageCtxState } from './context'
 import { LookPageCtx, OutletContext } from './context'
 import LookPage from './LookPage'
 
 export interface LookPageWrapperProps {
-  data: PageInstance
+  data: LookStackPage
 }
 
 const LookPageWrapper: FC<LookPageWrapperProps> = (props) => {
