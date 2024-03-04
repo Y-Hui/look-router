@@ -14,9 +14,9 @@ look-router 的目标是：在移动端单页应用（SPA）中打造良好的�
 
 ## Demo
 
-使用 react-router 的 [DEMO](https://github.com/Y-Hui/look-router/demo-dist/normal.html)
+使用 react-router 的 [DEMO](https://y-hui.github.io/look-router/demo-dist/normal.html)
 
-使用 look-router 的 [DEMO](https://github.com/Y-Hui/look-router/demo-dist)
+使用 look-router 的 [DEMO](https://y-hui.github.io/look-router/demo-dist)
 
 ## 使用
 
