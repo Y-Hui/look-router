@@ -271,6 +271,19 @@ export default class LookRouter {
 
     const result: LookStackPage[] = []
 
+    const keepParentKey = new Set<string>()
+    const historyKey = this.history.value.map((x) => LookHistory.encode(x))
+    oldPages.forEach((x) => {
+      if (!x.parent) return
+      const currentKey = LookHistory.encode({
+        pathname: x.pathname,
+        search: x.search || '',
+      })
+      if (historyKey.includes(currentKey)) {
+        keepParentKey.add(x.parent.key)
+      }
+    })
+
     oldPages.forEach((item) => {
       const key = LookHistory.encode({
         pathname: item.pathname,
@@ -282,7 +295,15 @@ export default class LookRouter {
         // eslint-disable-next-line no-param-reassign
         item.keepAlive = true
       }
-      if (count || newPagesMap.has(key) || item.keepAlive) {
+      if (
+        count ||
+        newPagesMap.has(key) ||
+        item.keepAlive ||
+        keepParentKey.has(item.key)
+      ) {
+        if (item.parent) {
+          keepParentKey.add(item.parent.key)
+        }
         result.push(item)
         newPagesMap.delete(key)
       }
