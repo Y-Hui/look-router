@@ -2,6 +2,7 @@ import type { History as HistoryImpl, Location, To, Update } from 'history'
 import { createBrowserHistory, createHashHistory } from 'history'
 
 import type { InternalRouteObject, LookStackPage, RouteObject } from '../types'
+import { decodePath } from '../utils/decodePath'
 import { flattenRoutes } from '../utils/flattenRoutes'
 import type { LookHistoryItem } from './history'
 import LookHistory from './history'
@@ -9,7 +10,7 @@ import { getMatches } from './matches'
 import { renderSinglePage, renderWithNestPage } from './render'
 import LookStack from './stack'
 
-export enum Action {
+export const enum Action {
   Pop = 'POP',
   Push = 'PUSH',
   Replace = 'REPLACE',
@@ -80,6 +81,7 @@ export default class LookRouter {
   back = (delta?: number) => {
     if (typeof delta === 'number') {
       if (delta < 1 || Number.isNaN(delta)) {
+        // eslint-disable-next-line no-console
         console.error(`back(${delta}) 参数不能小与 1`)
         return
       }
@@ -95,8 +97,8 @@ export default class LookRouter {
 
   private listenImpl = (e: Update) => {
     const { location } = e
-    const { pathname } = location
     const currentAction = this.action.getState()
+    const pathname = decodePath(location.pathname)
     const matches = getMatches(pathname, this.flattenRoutes)
 
     this.action.reset()

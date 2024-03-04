@@ -24,22 +24,15 @@ function renderPage(args: RenderPageArgs): LookStackPage {
   let params: Params | undefined
 
   if (match) {
-    const matchedPathname = match[0]
-    let pathnameBase = matchedPathname?.replace(/(.)\/+$/, '$1')
     const captureGroups = match?.slice(1)
     params = compiledParams.reduce<Mutable<Params>>(
       (memo, { paramName, isOptional }, index) => {
-        if (paramName === '*') {
-          const splatValue = captureGroups[index] || ''
-          pathnameBase = matchedPathname
-            .slice(0, matchedPathname.length - splatValue.length)
-            .replace(/(.)\/+$/, '$1')
-        }
-
         const value = captureGroups[index]
         if (isOptional && !value) {
+          // eslint-disable-next-line no-param-reassign
           memo[paramName] = undefined
         } else {
+          // eslint-disable-next-line no-param-reassign
           memo[paramName] = (value || '').replace(/%2F/g, '/')
         }
         return memo
