@@ -268,7 +268,7 @@ export default class LookRouter {
     })
 
     result.forEach((item, _i, arr) => {
-      if (Array.isArray(item.route.children)) {
+      if (Array.isArray(item.route.raw.children)) {
         item.children = getChildren(arr, item)
         item.children.forEach((child) => {
           child.parent = item

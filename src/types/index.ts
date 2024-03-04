@@ -46,7 +46,7 @@ export type InternalRouteObject = {
   compiledParams: CompiledPathParam[]
   /** 输入一个 pathname，检查与当前的路由配置是否匹配 */
   match: (pathname: string) => boolean
-} & RouteObject
+} & Pick<RouteObject, 'path'>
 
 /**
  * @internal
@@ -55,6 +55,14 @@ export interface LookStackPage {
   key: string
   visible: boolean
 
+  /**
+   * 路由渲染时的 path，不是路由配置的 path
+   *
+   * 例如:
+   * 路由配置      /user/:id
+   * 跳转到        /user/1
+   * 那么这里的值为 /user/1
+   */
   pathname: string
   children?: LookStackPage[]
   parent?: LookStackPage

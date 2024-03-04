@@ -13,7 +13,7 @@ type RenderPageArgs = {
 function renderPage(args: RenderPageArgs): LookStackPage {
   const { route, children, parent, search, pathname } = args
 
-  if (typeof route !== 'object' || route === null || !route?.component) {
+  if (typeof route !== 'object' || route === null || !route?.raw.component) {
     throw Error('[look-router]: Route does not exist')
   }
 
@@ -91,7 +91,7 @@ export function renderWithNestPage(args: RenderArgs): LookStackPage[] {
   }
 
   forEachRight(matches, (item) => {
-    const isMatched = item.path === pathname
+    const isMatched = item.match(pathname)
     const page = renderPage({
       route: item,
       search,
