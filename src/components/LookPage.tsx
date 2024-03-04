@@ -1,5 +1,5 @@
 import type { ReactElement } from 'react'
-import { Suspense, useRef } from 'react'
+import { useRef } from 'react'
 
 import type { PageComponentProps } from '../types'
 
@@ -23,7 +23,7 @@ function LookPage(props: LookPageProps): ReactElement {
           : { overflow: 'auto', height: '100vh', display: visible ? undefined : 'none' }
       }
     >
-      <Suspense fallback={null}>{children}</Suspense>
+      {children}
     </div>
   )
 }

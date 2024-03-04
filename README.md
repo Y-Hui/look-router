@@ -54,7 +54,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 - [x] 路由参数匹配
 - [x] useSearchParams
 - [x] useWatchVisible
-- [x] `<Link />`
+- [ ] `<Link />`
+
+  - [x] 基础功能
+  - [ ] isActive
 - [x] `<RouterView />`
 
   - [x] 基础功能
@@ -63,4 +66,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 - [x] switch 页面（切换页面而不销毁，并且不添加历史记录，适用于使用嵌套路由实现的 TabBar）
 - [x] redirectTo
 - [x] 路由 meta
+- [ ] WillPop
 

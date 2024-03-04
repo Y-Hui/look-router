@@ -79,16 +79,9 @@ export default class LookRouter {
     this.instance.replace(to, state)
   }
 
-  back = (delta?: number) => {
-    if (typeof delta === 'number') {
-      if (delta < 1 || Number.isNaN(delta)) {
-        // eslint-disable-next-line no-console
-        console.error(`back(${delta}) parameter cannot be less than 1`)
-        return
-      }
-    }
+  go = (delta: number) => {
     this.action.setState(Action.Pop)
-    this.instance.back()
+    this.instance.go(delta)
   }
 
   switch = (to: To, state?: unknown) => {

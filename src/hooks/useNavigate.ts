@@ -15,12 +15,21 @@ export interface NavigateOpts {
   clean?: boolean
 }
 
-export function useNavigate() {
+interface NavigateFunction {
+  (to: To, options?: NavigateOpts): void
+  (delta: number): void
+}
+
+export function useNavigate(): NavigateFunction {
   const { router } = useRouterCtx('useNavigate')
 
   return useCallback(
-    (to: To, opts?: NavigateOpts) => {
-      const { replace = false, state, clean } = opts || {}
+    (to: To | number, opts: NavigateOpts = {}) => {
+      const { replace = false, state, clean } = opts
+      if (typeof to === 'number') {
+        router.go(to)
+        return
+      }
       if (clean) {
         router.clean()
       }
