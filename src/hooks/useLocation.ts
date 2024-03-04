@@ -4,7 +4,7 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim'
 import { useRouterCtx } from '../components/context'
 
 export default function useLocation() {
-  const { router } = useRouterCtx('useNavigate')
+  const { router } = useRouterCtx('useLocation')
 
   const listener = useRef<Set<() => void>>()
   useEffect(() => {

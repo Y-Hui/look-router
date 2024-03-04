@@ -1,4 +1,4 @@
-import type { History as HistoryImpl, Location, To, Update } from 'history'
+import type { Blocker, History as HistoryImpl, Location, To, Update } from 'history'
 import { createBrowserHistory, createHashHistory } from 'history'
 
 import type { InternalRouteObject, LookStackPage, RouteObject } from '../types'
@@ -44,9 +44,12 @@ export default class LookRouter {
 
   routes: RouteObject[]
 
+  block: (blocker: Blocker) => () => void
+
   constructor(args: { mode?: 'hash' | 'history'; routes: RouteObject[] }) {
     const { mode = 'hash', routes } = args
     this.instance = mode === 'history' ? createBrowserHistory() : createHashHistory()
+    this.block = this.instance.block
     this.routes = routes
     this.flattenRoutes = flattenRoutes(routes)
     this.init()

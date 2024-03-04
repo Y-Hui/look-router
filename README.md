@@ -59,7 +59,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
 ## Outlet
 
-## 🚧 WillPop
+## WillPop
 
 ## useLocation
 
@@ -97,6 +97,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 - [x] switch 页面（切换页面而不销毁，并且不添加历史记录，适用于使用嵌套路由实现的 TabBar）
 - [x] redirectTo
 - [x] 路由 meta
-- [ ] WillPop
+- [x] WillPop
 - [ ] index 配置
 

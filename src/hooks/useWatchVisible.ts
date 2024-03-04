@@ -1,13 +1,9 @@
-import { useEffect } from 'react'
+import { useState } from 'react'
 
-import { useLookPageCtx } from '../components/context'
-import { useLatestFn } from './useLatestFn'
+import useWatchVisibleEffect from './useWatchVisibleEffect'
 
-export default function useWatchVisible(effect: (visible: boolean) => void) {
-  const { listenVisible } = useLookPageCtx('useWatchVisible')
-
-  const effectImpl = useLatestFn(effect)
-  useEffect(() => {
-    return listenVisible(effectImpl)
-  }, [listenVisible, effectImpl])
+export default function useWatchVisible() {
+  const [visible, setVisible] = useState(true)
+  useWatchVisibleEffect(setVisible)
+  return visible
 }

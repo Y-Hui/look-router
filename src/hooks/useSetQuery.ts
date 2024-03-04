@@ -9,7 +9,7 @@ export type SetQueryFn = (action: SetStateAction<SearchParams>) => void
 
 function useSetQuery(): SetQueryFn {
   const { instance } = useLookPageCtx('useSetQuery')
-  const { router } = useRouterCtx('useNavigate')
+  const { router } = useRouterCtx('useSetQuery')
 
   return useCallback(
     (action: SetStateAction<SearchParams>) => {
