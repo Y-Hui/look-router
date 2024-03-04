@@ -1,5 +1,11 @@
 import type { To } from 'history'
-import type { AnchorHTMLAttributes, DetailedHTMLProps, ForwardedRef } from 'react'
+import type {
+  AnchorHTMLAttributes,
+  DetailedHTMLProps,
+  ForwardedRef,
+  ForwardRefExoticComponent,
+  RefAttributes,
+} from 'react'
 import { forwardRef } from 'react'
 
 import { useNavigate } from '../hooks/useNavigate'
@@ -9,7 +15,7 @@ type AnchorHTMLProps = DetailedHTMLProps<
   AnchorHTMLAttributes<HTMLAnchorElement>,
   HTMLAnchorElement
 >
-export interface LinkProps extends Omit<AnchorHTMLProps, 'href'> {
+export interface LinkProps extends Omit<AnchorHTMLProps, 'href' | 'ref'> {
   to: To
   replace?: boolean
   /**
@@ -51,4 +57,6 @@ function Link(props: LinkProps, ref: ForwardedRef<HTMLAnchorElement>) {
   )
 }
 
-export default forwardRef(Link)
+export default forwardRef(Link) as ForwardRefExoticComponent<
+  LinkProps & RefAttributes<HTMLAnchorElement>
+>

@@ -57,6 +57,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
 ## Link
 
+## NavLink
+
 ## Outlet
 
 ## WillPop
@@ -85,10 +87,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 - [x] 路由参数匹配
 - [x] useSearchParams
 - [x] useWatchVisible
-- [ ] `<Link />`
-
-  - [x] 基础功能
-  - [ ] isActive
+- [x] `<Link />`
+- [x] `<NavLink />`
 - [x] `<RouterView />`
 
   - [x] 基础功能

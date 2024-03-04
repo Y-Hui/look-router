@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation } from 'look-router'
+import { NavLink, Outlet } from 'look-router'
 import type { FC } from 'react'
 import { createElement, Suspense } from 'react'
 
@@ -35,8 +35,6 @@ const tabs = [
 ]
 
 const Tabs: FC = () => {
-  const location = useLocation()
-
   return (
     <>
       <Suspense>
@@ -45,17 +43,18 @@ const Tabs: FC = () => {
       <nav className="fixed bottom-0 left-0 w-full h-[52px] grid grid-cols-4 border-solid border-t border-slate-200 bg-white">
         {tabs.map((item) => {
           return (
-            <Link
+            <NavLink
               key={item.path}
               className="flex items-center justify-center text-26"
               to={item.path}
               switch
             >
-              {createElement(
-                location.pathname === item.path ? item.activeIcon : item.icon,
-                { className: 'svgr' },
-              )}
-            </Link>
+              {({ isActive }) => {
+                return createElement(isActive ? item.activeIcon : item.icon, {
+                  className: 'svgr',
+                })
+              }}
+            </NavLink>
           )
         })}
       </nav>

@@ -1,6 +1,6 @@
 import type { FC } from 'react'
 import { createElement, Suspense } from 'react'
-import { Link, Navigate, Outlet, useLocation } from 'react-router-dom'
+import { Navigate, NavLink, Outlet, useLocation } from 'react-router-dom'
 
 import HomeIcon from './icons/home.svg?react'
 import HomeIconActive from './icons/home-active.svg?react'
@@ -49,17 +49,18 @@ const Tabs: FC = () => {
       <nav className="fixed bottom-0 left-0 w-full h-[52px] grid grid-cols-4 border-solid border-t border-slate-200 bg-white">
         {tabs.map((item) => {
           return (
-            <Link
+            <NavLink
               key={item.path}
               className="flex items-center justify-center text-26"
               to={item.path}
               replace
             >
-              {createElement(
-                location.pathname === item.path ? item.activeIcon : item.icon,
-                { className: 'svgr' },
-              )}
-            </Link>
+              {({ isActive }) => {
+                return createElement(isActive ? item.activeIcon : item.icon, {
+                  className: 'svgr',
+                })
+              }}
+            </NavLink>
           )
         })}
       </nav>
