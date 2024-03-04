@@ -1,0 +1,1 @@
+import{r as e,j as s}from"./preload-helper-d14b839a.js";import{d as r}from"./dayjs.min-36c7790a.js";const o=()=>{const[t]=e.useState(()=>r().format("MM-DD HH:mm:ss"));return s.jsxs("div",{className:"flex flex-col items-center justify-center h-screen",children:[s.jsx("h2",{className:"text-40",children:"Notifications"}),s.jsxs("p",{children:["初次渲染：",t]})]})};export{o as default};

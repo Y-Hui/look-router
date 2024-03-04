@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
+    "outDir": "demo-dist",
     "sourceMap": false,
     "target": "es2016",
     "useDefineForClassFields": false,
@@ -23,5 +23,5 @@
       "look-router": ["../src"]
     }
   },
-  "include": ["../src/**/*", "src/**/*", "vite.config.ts"]
+  "include": ["../src/**/*", "src/**/*", "vite.config.ts", "vite-env.d.ts"]
 }

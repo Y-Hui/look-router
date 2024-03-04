@@ -2,3 +2,4 @@
 node_modules
 tailwind.config.js
 **/*.svg
+**/demo-dist/*

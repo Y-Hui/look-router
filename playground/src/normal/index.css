@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+}
+
+.svgr {
+  width: 1em;
+  height: 1em;
+  overflow: hidden;
+  fill: currentcolor;
+}

@@ -2,3 +2,4 @@
 **/*.ejs
 **/*.html
 package.json
+**/demo-dist/*

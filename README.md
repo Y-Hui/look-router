@@ -12,6 +12,12 @@ look-router 的目标是：在移动端单页应用（SPA）中打造良好的�
 
 > 当然，你也可以不考虑 look-router，尝试对 [MoreJS](https://mor.ele.me/) 的路由模块进行移植可能也会是一个可行的方案。
 
+## Demo
+
+使用 react-router 的 [DEMO](https://github.com/Y-Hui/look-router/demo-dist/normal.html)
+
+使用 look-router 的 [DEMO](https://github.com/Y-Hui/look-router/demo-dist)
+
 ## 使用
 
 ```tsx
@@ -38,11 +44,36 @@ const router = createRouter({
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <RouterView router={router} />
+    <Suspense>
+      <RouterView router={router} />
+    </Suspense>
   </React.StrictMode>,
 )
 ```
 
+## createRouter
+
+## RouterView
+
+## Link
+
+## Outlet
+
+## 🚧 WillPop
+
+## useLocation
+
+## useNavigate
+
+## useParams
+
+## useQuery
+
+## useSetQuery
+
+## useSearchParams
+
+## useWatchVisible
 
 
 ## TODO
@@ -67,4 +98,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 - [x] redirectTo
 - [x] 路由 meta
 - [ ] WillPop
+- [ ] index 配置
 
