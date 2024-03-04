@@ -1,6 +1,5 @@
-/* eslint-disable no-param-reassign */
 import type { History as HistoryImpl, Location, To, Update } from 'history'
-import { Action as HistoryAction, createBrowserHistory, createHashHistory } from 'history'
+import { createBrowserHistory, createHashHistory } from 'history'
 
 import type { InternalRouteObject, LookStackPage, RouteObject } from '../types'
 import { flattenRoutes } from '../utils/flattenRoutes'
@@ -53,12 +52,14 @@ export default class LookRouter {
 
   private action = createState(Action.Pop)
 
-  private initTriggerListener = false
-
   private init = () => {
-    this.initTriggerListener = true
-    this.action.setState(Action.Replace)
-    this.listenImpl({ action: HistoryAction.Replace, location: this.instance.location })
+    this.instance.listen((e) => {
+      this.listener.forEach((fn) => {
+        this.dispatchListener(e.location, fn)
+      })
+      this.listenImpl(e)
+    })
+    this.replace(this.instance.location, this.instance.location.state)
   }
 
   clean = () => {
@@ -104,6 +105,14 @@ export default class LookRouter {
       throw Error(`${pathname} does not exist`)
     }
 
+    const matched = matches[matches.length - 1]
+    if (matched.raw.redirectTo) {
+      const { redirectTo } = matched.raw
+      return this.replace(
+        typeof redirectTo === 'function' ? redirectTo(location) : redirectTo,
+      )
+    }
+
     switch (currentAction) {
       case Action.Push: {
         this.routerPush(location, matches)
@@ -132,15 +141,13 @@ export default class LookRouter {
     listener?.(location, matches[matches.length - 1]!.raw!)
   }
 
+  private listener = new Set<(location: Location, route: RouteObject) => void>()
+
   listen = (listener: (location: Location, route: RouteObject) => void) => {
-    if (this.initTriggerListener) {
-      this.initTriggerListener = false
-      this.dispatchListener(this.instance.location, listener)
+    this.listener.add(listener)
+    return () => {
+      this.listener.delete(listener)
     }
-    return this.instance.listen((e) => {
-      this.dispatchListener(e.location, listener)
-      this.listenImpl(e)
-    })
   }
 
   private static renderRoute = (
@@ -255,6 +262,7 @@ export default class LookRouter {
       const count = this.history.countMap[key]
       const shouldKeepAlive = popped && key === LookHistory.encode(popped)
       if (shouldKeepAlive) {
+        // eslint-disable-next-line no-param-reassign
         item.keepAlive = true
       }
       if (count || newPagesMap.has(key) || item.keepAlive) {
@@ -269,8 +277,10 @@ export default class LookRouter {
 
     result.forEach((item, _i, arr) => {
       if (Array.isArray(item.route.raw.children)) {
+        // eslint-disable-next-line no-param-reassign
         item.children = getChildren(arr, item)
         item.children.forEach((child) => {
+          // eslint-disable-next-line no-param-reassign
           child.parent = item
         })
         return item

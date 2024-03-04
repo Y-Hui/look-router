@@ -1,3 +1,4 @@
+import type { Location, To } from 'history'
 import type { ComponentType, ReactElement, ReactNode } from 'react'
 
 export type Part<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
@@ -19,7 +20,7 @@ export interface PageComponentProps {
 export interface RouteObjectBase {
   path: string
   index?: boolean
-  redirectTo?: string
+  redirectTo?: To | ((location: Location) => To)
   component?: ComponentType
   children?: RouteObject[]
   pageComponent?: ComponentType<PageComponentProps>
