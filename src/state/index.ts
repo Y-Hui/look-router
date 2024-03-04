@@ -15,6 +15,7 @@ export const enum Action {
   Push = 'PUSH',
   Replace = 'REPLACE',
   Switch = 'SWITCH',
+  UpdateSearch = 'UPDATE_SEARCH',
 }
 
 function createState<T>(initialValue: T) {
@@ -82,7 +83,7 @@ export default class LookRouter {
     if (typeof delta === 'number') {
       if (delta < 1 || Number.isNaN(delta)) {
         // eslint-disable-next-line no-console
-        console.error(`back(${delta}) 参数不能小与 1`)
+        console.error(`back(${delta}) parameter cannot be less than 1`)
         return
       }
     }
@@ -95,9 +96,30 @@ export default class LookRouter {
     this.instance.replace(to, state)
   }
 
+  updateSearch = (pathname: string, key: string, search: string) => {
+    const index = this.stack.findIndex((x) => x.key === key)
+    if (index === -1) {
+      // eslint-disable-next-line no-console
+      console.error(`Update search failed, ${pathname} route not found`)
+      return
+    }
+    const target = this.stack.at(index)!
+    target.search = search
+    this.stack.setStack(this.stack.stack.slice())
+    this.stack.notifyListener()
+    this.action.setState(Action.UpdateSearch)
+    this.instance.replace({ pathname, search })
+  }
+
   private listenImpl = (e: Update) => {
     const { location } = e
+
     const currentAction = this.action.getState()
+    if (currentAction === Action.UpdateSearch) {
+      this.action.reset()
+      return
+    }
+
     const pathname = decodePath(location.pathname)
     const matches = getMatches(pathname, this.flattenRoutes)
 

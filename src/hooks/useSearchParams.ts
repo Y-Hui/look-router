@@ -1,45 +1,21 @@
-import { useState } from 'react'
+import type { Params } from '../types'
+import useQuery from './useQuery'
+import type { SetQueryFn } from './useSetQuery'
+import useSetQuery from './useSetQuery'
 
-import { useLookPageCtx } from '../components/context'
-
-/**
- * 获取当前路由下的 search 参数（并非获取地址栏中的 search 参数）
- */
-function useSearchParams(): Record<string, string | undefined>
-function useSearchParams<T extends Record<string, string>>(): Record<
-  keyof T,
-  string | undefined
->
-function useSearchParams<T>(formatter: (searchParams: Record<string, string>) => T): T
+function useSearchParams(): [Params, SetQueryFn]
+function useSearchParams<T extends Params>(): [
+  Record<keyof T, string | undefined>,
+  SetQueryFn,
+]
+function useSearchParams<T>(formatter: (searchParams: Params) => T): [T, SetQueryFn]
 function useSearchParams<T>(
-  formatter?: (searchParams: Record<string, string>) => T,
-): Record<string, string | undefined> | T {
-  const { instance } = useLookPageCtx('useSearchParams')
+  formatter?: (searchParams: Params) => T,
+): [Params | T, SetQueryFn] {
+  const search = useQuery<T>(formatter)
+  const setSearch = useSetQuery()
 
-  const [data] = useState(() => {
-    if (typeof instance.search !== 'string') {
-      return formatter?.({}) ?? {}
-    }
-
-    const result: Record<string, string> = {}
-    const search = new URLSearchParams(instance.search)
-
-    // eslint-disable-next-line no-restricted-syntax
-    for (const key of search.keys()) {
-      const value = search.get(key)
-      if (value != null) {
-        result[key] = value
-      }
-    }
-
-    if (typeof formatter === 'function') {
-      return formatter(result)
-    }
-
-    return result
-  })
-
-  return data
+  return [search, setSearch] as const
 }
 
 export default useSearchParams

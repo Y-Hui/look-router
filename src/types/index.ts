@@ -3,12 +3,14 @@ import type { ComponentType, ReactElement, ReactNode } from 'react'
 
 export type Part<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
+export type SearchParams = Record<string, string | string[]>
+
 export type Mutable<T> = {
   -readonly [P in keyof T]: T[P]
 }
 
 export type Params<Key extends string = string> = {
-  readonly [key in Key]: string | undefined
+  readonly [key in Key]: string | undefined | string[]
 }
 
 export interface PageComponentProps {
