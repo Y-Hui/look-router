@@ -44,33 +44,20 @@ export function renderWithNestPage(args: RenderArgs): LookStackPage[] {
   const result: LookStackPage[] = []
 
   let children: LookStackPage[] | undefined
-  const getChildren = () => {
-    if (!Array.isArray(children)) return undefined
-    return children.slice()
-  }
-  const updateChildren = (value: LookStackPage) => {
-    if (Array.isArray(children)) {
-      children.push(value)
-      return
-    }
-    children = [value]
-  }
-
   forEachRight(matches, (item, index) => {
-    const newChildren = getChildren()
     const page = renderPage({
       matched: item,
-      children: newChildren,
+      children,
       matches: matches.slice(0, index + 1),
     })
-    newChildren?.forEach((child) => {
+    children?.forEach((child) => {
       // eslint-disable-next-line no-param-reassign
       child.parent = page
       // eslint-disable-next-line no-param-reassign
       child.route.parentPath = page.route.path
     })
     result.unshift(page)
-    updateChildren(page)
+    children = [page]
   })
 
   return result

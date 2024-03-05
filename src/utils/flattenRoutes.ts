@@ -74,6 +74,7 @@ export function flattenRoutes(routes: RouteObject[]): FlattenRoute[] {
     }
 
     const path = joinPaths([parentPath, meta.relativePath])
+    meta.route = { ...meta.route, path }
     const routesMeta = parentsMeta.concat(meta)
 
     if (Array.isArray(children) && children.length > 0) {

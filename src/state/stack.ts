@@ -78,16 +78,6 @@ export default class LookStack {
     return result
   }
 
-  /**
-   * 重用路由
-   * reference +1
-   */
-  reuse = (args: QueryItem) => {
-    const route = this.find(args)!
-    this.setStack(this.stack.slice())
-    return route
-  }
-
   update = (index: number, value: LookStackPage) => {
     this.stack[index] = value
   }
@@ -97,7 +87,10 @@ export default class LookStack {
       item.visible = false
     })
     if (args !== undefined) {
-      const route = this.find(args)!
+      const route = this.find(args)
+      if (!route) {
+        throw Error(`${args.pathname} does not exist`)
+      }
       const returns = LookStack.getParents(route)
       route.keepAlive = false
       returns.forEach((item) => {
