@@ -146,7 +146,12 @@ export default class LookRouter {
     const matched = matches[matches.length - 1]
     if (matched.route.redirectTo) {
       const { redirectTo } = matched.route
-      this.replace(typeof redirectTo === 'function' ? redirectTo(location) : redirectTo)
+      const to = createTo(
+        typeof redirectTo === 'function' ? redirectTo(location) : redirectTo,
+        matches,
+      )
+      this.history.push({ pathname: location.pathname, search: location.search })
+      this.replace(to)
       return
     }
 
