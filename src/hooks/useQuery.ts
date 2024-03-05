@@ -1,8 +1,8 @@
 import { useMemo } from 'react'
 
-import { useLookPageCtx } from '../components/context'
 import type { Params } from '../types'
 import { decodeSearch } from '../utils/search'
+import useLocation from './useLocation'
 
 /**
  * 获取当前路由下的 search 参数
@@ -12,15 +12,15 @@ function useQuery<T extends Params>(): Record<keyof T, string | undefined | stri
 function useQuery<T>(formatter: (searchParams: Params) => T): T
 function useQuery<T>(formatter?: (searchParams: Params) => T): Params
 function useQuery<T>(formatter?: (searchParams: Params) => T): Params | T {
-  const { instance } = useLookPageCtx('useQuery')
+  const location = useLocation()
 
   return useMemo(() => {
-    if (typeof instance.search !== 'string') {
+    if (typeof location.search !== 'string') {
       return formatter?.({}) ?? {}
     }
-    const result = decodeSearch(instance.search)
+    const result = decodeSearch(location.search)
     return typeof formatter === 'function' ? formatter(result) : result
-  }, [formatter, instance.search])
+  }, [formatter, location.search])
 }
 
 export default useQuery

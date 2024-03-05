@@ -19,7 +19,7 @@ export function decodeSearch(searchStr?: string) {
 }
 
 export function encodeSearch(init: SearchParams) {
-  return new URLSearchParams(
+  const search = new URLSearchParams(
     Object.keys(init).reduce(
       (memo, key) => {
         const value = init[key]
@@ -30,4 +30,5 @@ export function encodeSearch(init: SearchParams) {
       [] as [string, string][],
     ),
   ).toString()
+  return search.startsWith('?') ? search : `?${search}`
 }

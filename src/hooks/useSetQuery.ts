@@ -1,23 +1,25 @@
 import type { SetStateAction } from 'react'
 import { useCallback } from 'react'
 
-import { useLookPageCtx, useRouterCtx } from '../components/context'
+import { useRouterCtx } from '../components/context'
 import type { SearchParams } from '../types'
 import { decodeSearch, encodeSearch } from '../utils/search'
+import useLocation from './useLocation'
 
 export type SetQueryFn = (action: SetStateAction<SearchParams>) => void
 
 function useSetQuery(): SetQueryFn {
-  const { instance } = useLookPageCtx('useSetQuery')
+  const location = useLocation()
   const { router } = useRouterCtx('useSetQuery')
 
   return useCallback(
     (action: SetStateAction<SearchParams>) => {
-      const rawSearch = decodeSearch(instance.search)
+      const oldSearch = location.search
+      const rawSearch = decodeSearch(oldSearch)
       const search = typeof action === 'function' ? action(rawSearch) : action
-      router.updateSearch(instance.pathname, instance.key, encodeSearch(search))
+      router.updateSearch({ ...location, search: encodeSearch(search) }, oldSearch)
     },
-    [instance.key, instance.pathname, instance.search, router],
+    [location, router],
   )
 }
 

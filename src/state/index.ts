@@ -106,17 +106,16 @@ export default class LookRouter {
     this.instance.replace(to, state)
   }
 
-  updateSearch = (pathname: string, key: string, search: string) => {
-    const index = this.stack.findIndex((x) => x.key === key)
-    if (index === -1) {
+  updateSearch = (location: Location, oldSearch: string) => {
+    const { pathname, search } = location
+    const target = this.stack.find({ pathname: location.pathname, search: oldSearch })
+    if (!target) {
       // eslint-disable-next-line no-console
       console.error(`Update search failed, ${pathname} route not found`)
       return
     }
-    const args = { pathname, search }
-    const target = this.stack.at(index)!
     target.search = search
-
+    const args = { pathname, search }
     this.history.popLast()
     this.history.push(args)
 

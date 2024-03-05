@@ -47,13 +47,17 @@ function matchRouteBranch(
     }
 
     Object.assign(matchedParams, value.params)
-    result.push({
+    const newItem: MatchedRoute = {
       params: matchedParams,
       pathname: joinPaths([matchedPathname, value.pathname]),
       route,
       pathnameBase: normalizePathname(joinPaths([matchedPathname, value.pathnameBase])),
-      search,
-    })
+      search: '',
+    }
+    if (newItem.pathname === pathname && search.length > 0) {
+      newItem.search = search.startsWith('?') ? search : `?${search}`
+    }
+    result.push(newItem)
 
     if (value.pathnameBase !== '/') {
       matchedPathname = joinPaths([matchedPathname, value.pathnameBase])
