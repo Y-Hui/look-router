@@ -7,6 +7,7 @@ import type {
 } from 'react'
 import { forwardRef } from 'react'
 
+import { useHref } from '../hooks/useHref'
 import useLocation from '../hooks/useLocation'
 import type { LinkProps } from './Link'
 import Link from './Link'
@@ -23,11 +24,19 @@ export interface NavLinkProps
 }
 
 function NavLink(props: NavLinkProps, ref: ForwardedRef<HTMLAnchorElement>) {
-  const { className: classNameProp, style: styleProp, children, to, ...rest } = props
+  const {
+    className: classNameProp,
+    style: styleProp,
+    children,
+    to: toArg,
+    ...rest
+  } = props
 
+  const to = useHref(toArg)
   const location = useLocation()
-  const pathname = typeof to === 'string' ? to : to.pathname
-  const renderProps: NavLinkRenderProps = { isActive: location.pathname === pathname }
+  const renderProps: NavLinkRenderProps = {
+    isActive: location.pathname === to.pathname,
+  }
 
   let className
   if (typeof classNameProp === 'function') {

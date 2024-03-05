@@ -4,11 +4,12 @@ import { globalKey } from '../utils/globalKey'
 
 type RenderPageArgs = {
   matched: MatchedRoute
+  matches: MatchedRoute[]
   children?: LookStackPage[]
 }
 
 function renderPage(args: RenderPageArgs): LookStackPage {
-  const { matched, children } = args
+  const { matched, matches, children } = args
   const { route, pathname, search, params } = matched
   if (typeof route !== 'object' || route === null || !route) {
     throw Error('[look-router]: Route does not exist')
@@ -25,6 +26,7 @@ function renderPage(args: RenderPageArgs): LookStackPage {
     search,
     params,
     route: { ...route, parentPath: undefined },
+    matches,
   }
 }
 
@@ -34,7 +36,7 @@ interface RenderArgs {
 
 export function renderSinglePage(args: RenderArgs): LookStackPage {
   const { matches } = args
-  return renderPage({ matched: matches[0] })
+  return renderPage({ matched: matches[0], matches })
 }
 
 export function renderWithNestPage(args: RenderArgs): LookStackPage[] {
@@ -59,6 +61,7 @@ export function renderWithNestPage(args: RenderArgs): LookStackPage[] {
     const page = renderPage({
       matched: item,
       children: newChildren,
+      matches,
     })
     newChildren?.forEach((child) => {
       // eslint-disable-next-line no-param-reassign

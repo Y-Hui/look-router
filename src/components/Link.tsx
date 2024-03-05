@@ -8,6 +8,7 @@ import type {
 } from 'react'
 import { forwardRef } from 'react'
 
+import { useHref } from '../hooks/useHref'
 import { useNavigate } from '../hooks/useNavigate'
 import { useRouterCtx } from './context'
 
@@ -30,7 +31,7 @@ export interface LinkProps extends Omit<AnchorHTMLProps, 'href' | 'ref'> {
 function Link(props: LinkProps, ref: ForwardedRef<HTMLAnchorElement>) {
   const {
     onClick,
-    to,
+    to: toArg,
     replace = false,
     children,
     switch: switchMode = false,
@@ -40,6 +41,8 @@ function Link(props: LinkProps, ref: ForwardedRef<HTMLAnchorElement>) {
 
   const { router } = useRouterCtx('<Link />')
   const navigate = useNavigate()
+
+  const to = useHref(toArg)
 
   return (
     <a
