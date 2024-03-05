@@ -1,8 +1,7 @@
 import type { Blocker, History as HistoryImpl, Location, To, Update } from 'history'
 import { createBrowserHistory, createHashHistory } from 'history'
 
-import type { InternalRouteObject, LookStackPage, RouteObject } from '../types'
-import { decodePath } from '../utils/decodePath'
+import type { FlattenRoute, LookStackPage, MatchedRoute, RouteObject } from '../types'
 import { flattenRoutes } from '../utils/flattenRoutes'
 import type { LookHistoryItem } from './history'
 import LookHistory from './history'
@@ -40,7 +39,7 @@ export default class LookRouter {
 
   stack = new LookStack()
 
-  flattenRoutes: InternalRouteObject[]
+  flattenRoutes: FlattenRoute[]
 
   routes: RouteObject[]
 
@@ -59,10 +58,10 @@ export default class LookRouter {
 
   private init = () => {
     this.instance.listen((e) => {
+      const matches = this.listenImpl(e)
       this.listener.forEach((fn) => {
-        this.dispatchListener(e.location, fn)
+        LookRouter.dispatchListener(e.location, fn, matches)
       })
-      this.listenImpl(e)
     })
     this.replace(this.instance.location, this.instance.location.state)
   }
@@ -99,15 +98,20 @@ export default class LookRouter {
       console.error(`Update search failed, ${pathname} route not found`)
       return
     }
+    const args = { pathname, search }
     const target = this.stack.at(index)!
     target.search = search
+
+    this.history.popLast()
+    this.history.push(args)
+
     this.stack.setStack(this.stack.stack.slice())
     this.stack.notifyListener()
     this.action.setState(Action.UpdateSearch)
-    this.instance.replace({ pathname, search })
+    this.instance.replace(args)
   }
 
-  private listenImpl = (e: Update) => {
+  private listenImpl = (e: Update): MatchedRoute[] | undefined => {
     const { location } = e
 
     const currentAction = this.action.getState()
@@ -116,21 +120,19 @@ export default class LookRouter {
       return
     }
 
-    const pathname = decodePath(location.pathname)
-    const matches = getMatches(pathname, this.flattenRoutes)
+    const matches = getMatches(location, this.flattenRoutes)
 
     this.action.reset()
 
-    if (matches.length === 0) {
-      throw Error(`${pathname} does not exist`)
+    if (!matches) {
+      throw Error(`${location.pathname} does not exist`)
     }
 
     const matched = matches[matches.length - 1]
-    if (matched.raw.redirectTo) {
-      const { redirectTo } = matched.raw
-      return this.replace(
-        typeof redirectTo === 'function' ? redirectTo(location) : redirectTo,
-      )
+    if (matched.route.redirectTo) {
+      const { redirectTo } = matched.route
+      this.replace(typeof redirectTo === 'function' ? redirectTo(location) : redirectTo)
+      return
     }
 
     switch (currentAction) {
@@ -151,38 +153,35 @@ export default class LookRouter {
         break
       }
     }
+    return matches
   }
 
-  private dispatchListener = (
+  static dispatchListener = (
     location: Location,
-    listener: (location: Location, route: RouteObject) => void,
+    listener: (location: Location, matches?: MatchedRoute[]) => void,
+    matches?: MatchedRoute[],
   ) => {
-    const matches = getMatches(location.pathname, this.flattenRoutes)
-    listener?.(location, matches[matches.length - 1]!.raw!)
+    listener?.(location, matches)
   }
 
-  private listener = new Set<(location: Location, route: RouteObject) => void>()
+  private listener = new Set<(location: Location, matches?: MatchedRoute[]) => void>()
 
-  listen = (listener: (location: Location, route: RouteObject) => void) => {
+  listen = (listener: (location: Location, matches?: MatchedRoute[]) => void) => {
     this.listener.add(listener)
     return () => {
       this.listener.delete(listener)
     }
   }
 
-  private static renderRoute = (
-    location: Location,
-    matches: InternalRouteObject[],
-  ): LookStackPage[] => {
-    const { pathname, search } = location
+  private static renderRoute = (matches: MatchedRoute[]): LookStackPage[] => {
     if (matches.length > 1) {
-      return renderWithNestPage({ matches, search, pathname })
+      return renderWithNestPage({ matches })
     }
-    const result = renderSinglePage({ matches, search, pathname })
+    const result = renderSinglePage({ matches })
     return [result]
   }
 
-  private routerPush = (location: Location, matches: InternalRouteObject[]) => {
+  private routerPush = (location: Location, matches: MatchedRoute[]) => {
     const { pathname, search } = location
     const args = { pathname, search }
 
@@ -197,25 +196,25 @@ export default class LookRouter {
       this.stack.visible(args)
     }
 
-    const pages = LookRouter.renderRoute(location, matches)
+    const pages = LookRouter.renderRoute(matches)
     this.stack.setStack(this.diff(this.stack.stack, pages))
     this.stack.visible(args)
   }
 
-  private routerReplace = (location: Location, matches: InternalRouteObject[]) => {
+  private routerReplace = (location: Location, matches: MatchedRoute[]) => {
     // 此参数为要展示的页面
     const { pathname, search } = location
     const args = { pathname, search }
 
     this.history.popLast()
     this.history.push(args)
-    const pages = LookRouter.renderRoute(location, matches)
+    const pages = LookRouter.renderRoute(matches)
     const newStack = this.diff(this.stack.stack, pages)
     this.stack.setStack(newStack)
     this.stack.visible(args)
   }
 
-  private routerPop = (location: Location, matches: InternalRouteObject[]) => {
+  private routerPop = (location: Location, matches: MatchedRoute[]) => {
     // 此参数为要展示的页面
     const { pathname, search } = location
 
@@ -226,13 +225,13 @@ export default class LookRouter {
     }
 
     this.history.pop({ pathname, search })
-    const pages = LookRouter.renderRoute(location, matches)
+    const pages = LookRouter.renderRoute(matches)
     const newStack = this.diff(this.stack.stack, pages)
     this.stack.setStack(newStack)
     this.stack.visible({ pathname, search })
   }
 
-  private routerSwitch = (location: Location, matches: InternalRouteObject[]) => {
+  private routerSwitch = (location: Location, matches: MatchedRoute[]) => {
     // 此参数为要展示的页面
     const { pathname, search } = location
     const args = { pathname, search }
@@ -240,7 +239,7 @@ export default class LookRouter {
     const popped = this.history.popLast()
     this.history.push(args)
 
-    const pages = LookRouter.renderRoute(location, matches)
+    const pages = LookRouter.renderRoute(matches)
     const newStack = this.diff(this.stack.stack, pages, popped)
     this.stack.setStack(newStack)
     this.stack.visible(args)
@@ -269,7 +268,7 @@ export default class LookRouter {
     const newPagesMap = LookRouter.transformLookStackPageToMap(newPages)
 
     const getChildren = (pages: LookStackPage[], parent: LookStackPage) => {
-      return pages.filter((item) => item.route.parent === parent.route.path)
+      return pages.filter((item) => item.route.parentPath === parent.route.path)
     }
 
     const result: LookStackPage[] = []
@@ -317,7 +316,7 @@ export default class LookRouter {
     })
 
     result.forEach((item, _i, arr) => {
-      if (Array.isArray(item.route.raw.children)) {
+      if (Array.isArray(item.route.children)) {
         // eslint-disable-next-line no-param-reassign
         item.children = getChildren(arr, item)
         item.children.forEach((child) => {

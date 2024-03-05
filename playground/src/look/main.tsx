@@ -7,8 +7,9 @@ import ReactDOM from 'react-dom/client'
 
 import { router } from './router'
 
-const onChange = ({ route }: RouterChangeEventArgs) => {
-  const title = `${route.meta?.title || ''}`
+const onChange = ({ matches }: RouterChangeEventArgs) => {
+  const route = matches?.at(-1)?.route
+  const title = `${route?.meta?.title || ''}`
   document.title = title
 }
 

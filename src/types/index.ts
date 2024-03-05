@@ -36,42 +36,51 @@ export interface NestRouteObject extends Omit<RouteObjectBase, 'component' | 'ch
 
 export type RouteObject = RouteObjectBase | NestRouteObject
 
+/**
+ * @private
+ */
 export type CompiledPathParam = { paramName: string; isOptional?: boolean }
 
 /**
- * @internal
- */
-export type InternalRouteObject = {
-  $$score: number
-  parent?: string
-  raw: RouteObject
-  matcher: RegExp
-  compiledParams: CompiledPathParam[]
-  /** 输入一个 pathname，检查与当前的路由配置是否匹配 */
-  match: (pathname: string) => boolean
-} & Pick<RouteObject, 'path'>
-
-/**
- * @internal
+ * @private
  */
 export interface LookStackPage {
   key: string
   visible: boolean
 
-  /**
-   * 路由渲染时的 path，不是路由配置的 path
-   *
-   * 例如:
-   * 路由配置      /user/:id
-   * 跳转到        /user/1
-   * 那么这里的值为 /user/1
-   */
+  /** 真实路由 */
   pathname: string
   children?: LookStackPage[]
   parent?: LookStackPage
 
   search?: string
   params?: Params<string>
-  route: InternalRouteObject
+  route: RouteObject & { parentPath?: string }
   keepAlive?: boolean
+}
+
+/**
+ * @private
+ */
+export type FlattenRoute = {
+  path: string
+  routesMeta: RouteMeta[]
+  score: number
+}
+
+/**
+ * @private
+ */
+export type RouteMeta = { relativePath: string; route: RouteObject }
+
+export type MatchedRoute = {
+  /** 路由参数 */
+  params: Params
+  /** 真实路由 */
+  pathname: string
+  pathnameBase: string
+  /** URL Search */
+  search: string
+  /** 路由配置 */
+  route: RouteObject
 }

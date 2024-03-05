@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "demo-dist",
+    "outDir": "./demo-dist",
     "sourceMap": false,
     "target": "es2016",
     "useDefineForClassFields": false,
@@ -16,8 +16,9 @@
     "removeComments": false,
     "skipLibCheck": true,
     "jsx": "react-jsx",
-    "lib": ["esnext", "dom"],
+    "lib": ["esnext", "dom", "DOM.Iterable"],
     "baseUrl": ".",
   },
-  "include": ["src/**/*"]
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules", "dist", "demo-dist"]
 }

@@ -1,6 +1,6 @@
 import type { CompiledPathParam } from '../types'
 
-export function compilePath(path: string) {
+export function compilePath(path: string, end = false) {
   const params: CompiledPathParam[] = []
   let regexpSource = `^${path
     .replace(/\/*\*?$/, '') // Ignore trailing / and /*, we'll handle it below
@@ -13,13 +13,15 @@ export function compilePath(path: string) {
 
   if (path.endsWith('*')) {
     params.push({ paramName: '*' })
-    regexpSource +=
-      path === '*' || path === '/*'
-        ? '(.*)$' // Already matched the initial /, just match the rest
-        : '(?:\\/(.+)|\\/*)$' // Don't include the / in params["*"]
+    regexpSource += path === '*' || path === '/*' ? '(.*)$' : '(?:\\/(.+)|\\/*)$'
+  } else if (end) {
+    // When matching to the end, ignore trailing slashes
+    regexpSource += '\\/*$'
+  } else if (path !== '' && path !== '/') {
+    regexpSource += '(?:(?=\\/|$))'
+  } else {
+    // Nothing to match for "" or "/"
   }
-
-  regexpSource += '\\/*$'
 
   const matcher = new RegExp(regexpSource, 'i')
 

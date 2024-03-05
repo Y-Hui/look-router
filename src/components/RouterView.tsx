@@ -5,14 +5,14 @@ import { useSyncExternalStore } from 'use-sync-external-store/shim'
 
 import { useLatestFn } from '../hooks/useLatestFn'
 import type LookRouter from '../state'
-import type { RouteObject } from '../types'
+import type { MatchedRoute } from '../types'
 import type { RouterViewCtxState } from './context'
 import { RouterViewCtx } from './context'
 import LookPageWrapper from './LookPageWrapper'
 
 export interface RouterChangeEventArgs {
   location: Location
-  route: RouteObject
+  matches?: MatchedRoute[]
 }
 
 export interface RouterViewProps {
@@ -36,8 +36,8 @@ const RouterView: FC<RouterViewProps> = (props) => {
   const onChange = useLatestFn(onChangeImpl)
 
   useEffect(() => {
-    return router.listen((location, route) => {
-      onChange?.({ location, route })
+    return router.listen((location, matches) => {
+      onChange?.({ location, matches })
     })
   }, [router, onChange])
 

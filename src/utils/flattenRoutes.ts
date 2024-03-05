@@ -1,5 +1,5 @@
-import type { InternalRouteObject, RouteObject } from '../types'
-import { compilePath } from './compilePath'
+import type { FlattenRoute, RouteMeta, RouteObject } from '../types'
+import { joinPaths } from './path'
 
 const paramRe = /^:\w+$/
 const dynamicSegmentValue = 3
@@ -36,48 +36,60 @@ function computeScore(path: string, index?: boolean) {
     }, initialScore)
 }
 
-export function flattenRoutes(routes: RouteObject[]): InternalRouteObject[] {
-  let stack = routes.slice()
-  const result: InternalRouteObject[] = []
+export function flattenRoutes(routes: RouteObject[]): FlattenRoute[] {
+  const result: FlattenRoute[] = []
 
-  let currentNestRoot: RouteObject[] = []
-  while (stack.length >= 1) {
-    const route = stack.shift()!
-    const { children } = route
-    if (
-      Array.isArray(children) &&
-      children.length > 0 &&
-      !currentNestRoot.includes(route)
-    ) {
-      currentNestRoot.push(route)
-      stack = [...children, route].concat(stack)
-    } else {
-      const parentRoute = currentNestRoot[currentNestRoot.length - 1]
-      let parent = parentRoute?.path
-
-      if (route === parentRoute) {
-        parent = currentNestRoot[currentNestRoot.length - 2]?.path
-      }
-
-      if (currentNestRoot.includes(route)) {
-        currentNestRoot = currentNestRoot.filter((x) => x !== route)
-      }
-
-      const { matcher, compiledParams } = compilePath(route.path)
-      result.push({
-        ...route,
-        raw: route,
-        $$score: computeScore(route.path),
-        parent,
-        matcher,
-        compiledParams,
-        match: (pathname: string) => matcher.test(pathname),
-      })
-    }
+  const flatten = (
+    routesArr: RouteObject[],
+    parentPath = '',
+    parentsMeta: RouteMeta[] = [],
+  ) => {
+    routesArr.forEach((route) => {
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      flattenRoute(route, parentPath, parentsMeta)
+    })
   }
 
+  const flattenRoute = (
+    route: RouteObject,
+    parentPath = '',
+    parentsMeta: RouteMeta[] = [],
+  ) => {
+    const { children } = route
+
+    const meta: RouteMeta = {
+      relativePath: route.path,
+      route,
+    }
+
+    if (meta.relativePath.startsWith('/')) {
+      if (!meta.relativePath.startsWith(parentPath)) {
+        throw new Error(
+          `Absolute route path "${meta.relativePath}" nested under path ` +
+            `"${parentPath}" is not valid. An absolute child route path ` +
+            `must start with the combined path of all its parent routes.`,
+        )
+      }
+      meta.relativePath = meta.relativePath.slice(parentPath.length)
+    }
+
+    const path = joinPaths([parentPath, meta.relativePath])
+    const routesMeta = parentsMeta.concat(meta)
+
+    if (Array.isArray(children) && children.length > 0) {
+      flatten(children, path, routesMeta)
+    }
+    result.push({
+      path,
+      score: computeScore(path),
+      routesMeta,
+    })
+  }
+
+  flatten(routes)
+
   result.sort((a, b) => {
-    return b.$$score - a.$$score
+    return b.score - a.score
   })
 
   return result

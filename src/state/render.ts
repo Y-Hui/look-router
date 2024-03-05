@@ -1,44 +1,17 @@
-import type { InternalRouteObject, LookStackPage, Mutable, Params } from '../types'
+import type { LookStackPage, MatchedRoute } from '../types'
 import forEachRight from '../utils/forEachRight'
 import { globalKey } from '../utils/globalKey'
 
 type RenderPageArgs = {
-  pathname: string
-  route: InternalRouteObject
+  matched: MatchedRoute
   children?: LookStackPage[]
-  parent?: LookStackPage
-  search?: string
 }
 
 function renderPage(args: RenderPageArgs): LookStackPage {
-  const { route, children, parent, search, pathname } = args
-
-  if (typeof route !== 'object' || route === null || !route?.raw.component) {
+  const { matched, children } = args
+  const { route, pathname, search, params } = matched
+  if (typeof route !== 'object' || route === null || !route) {
     throw Error('[look-router]: Route does not exist')
-  }
-
-  const { matcher, compiledParams } = route
-
-  const match = pathname.match(matcher)
-
-  let params: Params | undefined
-
-  if (match) {
-    const captureGroups = match?.slice(1)
-    params = compiledParams.reduce<Mutable<Params>>(
-      (memo, { paramName, isOptional }, index) => {
-        const value = captureGroups[index]
-        if (isOptional && !value) {
-          // eslint-disable-next-line no-param-reassign
-          memo[paramName] = undefined
-        } else {
-          // eslint-disable-next-line no-param-reassign
-          memo[paramName] = (value || '').replace(/%2F/g, '/')
-        }
-        return memo
-      },
-      {},
-    )
   }
 
   return {
@@ -47,27 +20,25 @@ function renderPage(args: RenderPageArgs): LookStackPage {
 
     pathname,
     children,
-    parent,
+    parent: undefined,
 
     search,
     params,
-    route,
+    route: { ...route, parentPath: undefined },
   }
 }
 
 interface RenderArgs {
-  pathname: string
-  search: string
-  matches: InternalRouteObject[]
+  matches: MatchedRoute[]
 }
 
 export function renderSinglePage(args: RenderArgs): LookStackPage {
-  const { matches, search, pathname } = args
-  return renderPage({ route: matches[0], search, pathname })
+  const { matches } = args
+  return renderPage({ matched: matches[0] })
 }
 
 export function renderWithNestPage(args: RenderArgs): LookStackPage[] {
-  const { matches, search, pathname } = args
+  const { matches } = args
   const result: LookStackPage[] = []
 
   let children: LookStackPage[] | undefined
@@ -84,20 +55,19 @@ export function renderWithNestPage(args: RenderArgs): LookStackPage[] {
   }
 
   forEachRight(matches, (item) => {
-    const isMatched = item.match(pathname)
+    const newChildren = getChildren()
     const page = renderPage({
-      route: item,
-      search,
-      pathname: isMatched ? pathname : item.path,
-      children: getChildren(),
+      matched: item,
+      children: newChildren,
+    })
+    newChildren?.forEach((child) => {
+      // eslint-disable-next-line no-param-reassign
+      child.parent = page
+      // eslint-disable-next-line no-param-reassign
+      child.route.parentPath = page.route.path
     })
     result.unshift(page)
     updateChildren(page)
-  })
-
-  forEachRight(result, (item) => {
-    // eslint-disable-next-line no-param-reassign
-    item.parent = result.find((x) => x.route.path === item.route.parent)
   })
 
   return result

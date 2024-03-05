@@ -46,6 +46,32 @@ export const router = createRouter({
       },
     },
     {
+      path: '/nest/:id',
+      component: lazy(() => import('./pages/nest/index')),
+      meta: {
+        title: '嵌套页',
+      },
+      redirectTo: (e) => {
+        return `${e.pathname}/details`
+      },
+      children: [
+        {
+          path: '/nest/:id/details',
+          component: lazy(() => import('./pages/nest/details')),
+          meta: {
+            title: '嵌套页 - 详情',
+          },
+        },
+        {
+          path: '/nest/:id/comments',
+          component: lazy(() => import('./pages/nest/comments')),
+          meta: {
+            title: '嵌套页 - 评论',
+          },
+        },
+      ],
+    },
+    {
       path: '*',
       component: lazy(() => import('./pages/404')),
       meta: {

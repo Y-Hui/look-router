@@ -14,8 +14,8 @@ export interface LookPageWrapperProps {
 const LookPageWrapper: FC<LookPageWrapperProps> = (props) => {
   const { data } = props
   const { route, pathname, visible, children } = data
-  const PageComponent = route.raw.pageComponent || LookPage
-  const RouteComponent = route.raw.component
+  const PageComponent = route.pageComponent || LookPage
+  const RouteComponent = route.component
 
   const listeners = useRef(new Set<(visible: boolean) => void>())
   const state = useMemo<LookPageCtxState>(() => {

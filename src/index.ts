@@ -17,5 +17,13 @@ export { default as useQuery } from './hooks/useQuery'
 export { default as useSearchParams } from './hooks/useSearchParams'
 export { default as useSetQuery } from './hooks/useSetQuery'
 export { default as useWatchVisible } from './hooks/useWatchVisible'
-export type { PageComponentProps } from './types/index'
+export type {
+  MatchedRoute,
+  NestRouteObject,
+  PageComponentProps,
+  Params,
+  RouteObject,
+  RouteObjectBase,
+  SearchParams,
+} from './types/index'
 export * from './utils/createRouter'
