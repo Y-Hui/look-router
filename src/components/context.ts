@@ -19,7 +19,6 @@ export function useRouterCtx(hookName: string) {
 
 export interface LookPageCtxState {
   instance: LookStackPage
-  listenVisible: (listener: (visible: boolean) => void) => () => void
 }
 
 export const LookPageCtx = createContext<LookPageCtxState | null>(null)
@@ -37,5 +36,15 @@ OutletContext.displayName = 'OutletContext'
 
 export function useOutletCtx() {
   const ctx = useContext(OutletContext)
+  return ctx
+}
+
+export const LookPageVisible = createContext<boolean | null>(null)
+
+export function useLookPageVisible() {
+  const ctx = useContext(LookPageVisible)
+  if (ctx === null) {
+    throw TypeError(`Cannot use useLookPageVisible outside <RouterView /> scope`)
+  }
   return ctx
 }

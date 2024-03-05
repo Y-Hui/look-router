@@ -1,31 +1,37 @@
-import type { ReactElement } from 'react'
-import { useRef } from 'react'
+import type { CSSProperties, ForwardedRef, ReactElement } from 'react'
+import { forwardRef } from 'react'
 
-import type { PageComponentProps } from '../types'
+import type { WrapperProps } from '../types'
+import { useLookPageVisible } from './context'
 
-export interface LookPageProps extends PageComponentProps {
+export interface LookPageProps extends WrapperProps {
+  className?: string
+  style?: CSSProperties
   noStyle?: boolean
 }
 
-function LookPage(props: LookPageProps): ReactElement {
-  const { visible, pathname, children, noStyle } = props
+function LookPage(props: LookPageProps, ref: ForwardedRef<HTMLDivElement>): ReactElement {
+  const { className = '', style, pathname, children, noStyle } = props
 
-  const node = useRef<HTMLDivElement | null>(null)
+  const visible = useLookPageVisible()
 
   return (
     <div
-      ref={node}
-      className="look-page"
+      ref={ref}
+      className={`look-page ${className}`}
       data-route={pathname}
-      style={
-        noStyle
-          ? { display: visible ? undefined : 'none' }
-          : { overflow: 'auto', height: '100vh', display: visible ? undefined : 'none' }
-      }
+      style={{
+        ...(!noStyle && {
+          overflow: 'auto',
+          height: '100vh',
+        }),
+        ...style,
+        ...(!visible && { display: 'none' }),
+      }}
     >
       {children}
     </div>
   )
 }
 
-export default LookPage
+export default forwardRef(LookPage)

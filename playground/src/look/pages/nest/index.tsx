@@ -27,14 +27,14 @@ const NestPage: FC = () => {
       <nav className="px-18 grid grid-cols-2">
         <NavLink
           className={({ isActive }) => clsx({ 'text-blue-500': isActive })}
-          to={`/nest/${id}/details`}
+          to="details"
           switch
         >
           详情
         </NavLink>
         <NavLink
           className={({ isActive }) => clsx({ 'text-blue-500': isActive })}
-          to={`/nest/${id}/comments`}
+          to="comments"
           switch
         >
           评论

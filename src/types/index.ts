@@ -13,9 +13,8 @@ export type Params<Key extends string = string> = {
   readonly [key in Key]: string | undefined | string[]
 }
 
-export interface PageComponentProps {
-  pathname: string
-  visible: boolean
+export interface WrapperProps {
+  pathname?: string
   children?: ReactNode
 }
 
@@ -25,7 +24,7 @@ export interface RouteObjectBase {
   redirectTo?: To | ((location: Location) => To)
   component?: ComponentType
   children?: RouteObject[]
-  pageComponent?: ComponentType<PageComponentProps>
+  wrapper?: ComponentType<WrapperProps> | null
   meta?: Record<PropertyKey, unknown>
 }
 

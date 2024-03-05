@@ -1,10 +1,10 @@
 import type { FC } from 'react'
-import { createElement, useEffect, useMemo, useRef } from 'react'
+import { createElement, useMemo } from 'react'
 
 import type { LookStackPage } from '../types'
 import isEnableOutlet from '../utils/isEnableOutlet'
 import type { LookPageCtxState } from './context'
-import { LookPageCtx, OutletContext } from './context'
+import { LookPageCtx, LookPageVisible, OutletContext, useRouterCtx } from './context'
 import LookPage from './LookPage'
 
 export interface LookPageWrapperProps {
@@ -14,40 +14,37 @@ export interface LookPageWrapperProps {
 const LookPageWrapper: FC<LookPageWrapperProps> = (props) => {
   const { data } = props
   const { route, pathname, visible, children } = data
-  const PageComponent = route.pageComponent || LookPage
+
+  const { globalWrapper } = useRouterCtx('<LookPageWrapper />').router
+
+  const PageComponent =
+    route.wrapper === null ? null : route.wrapper || globalWrapper || LookPage
   const RouteComponent = route.component
 
-  const listeners = useRef(new Set<(visible: boolean) => void>())
   const state = useMemo<LookPageCtxState>(() => {
-    return {
-      instance: data,
-      listenVisible(listener) {
-        listeners.current.add(listener)
-        return () => {
-          listeners.current.delete(listener)
-        }
-      },
-    }
+    return { instance: data }
   }, [data])
 
-  useEffect(() => {
-    listeners.current.forEach((fn) => fn(visible))
-  }, [visible])
+  const child = isEnableOutlet(route) ? (
+    <OutletContext.Provider value={children || null}>
+      {/* @ts-ignore */}
+      {createElement(RouteComponent)}
+    </OutletContext.Provider>
+  ) : (
+    // @ts-ignore
+    createElement(RouteComponent)
+  )
 
   return (
-    <LookPageCtx.Provider value={state}>
-      <PageComponent pathname={pathname} visible={visible}>
-        {isEnableOutlet(route) ? (
-          <OutletContext.Provider value={children || null}>
-            {/* @ts-ignore */}
-            {createElement(RouteComponent)}
-          </OutletContext.Provider>
+    <LookPageVisible.Provider value={visible}>
+      <LookPageCtx.Provider value={state}>
+        {PageComponent ? (
+          <PageComponent pathname={pathname}>{child}</PageComponent>
         ) : (
-          // @ts-ignore
-          createElement(RouteComponent)
+          child
         )}
-      </PageComponent>
-    </LookPageCtx.Provider>
+      </LookPageCtx.Provider>
+    </LookPageVisible.Provider>
   )
 }
 

@@ -58,6 +58,7 @@ export const router = createRouter({
         {
           path: '/nest/:id/details',
           component: lazy(() => import('./pages/nest/details')),
+          wrapper: null,
           meta: {
             title: '嵌套页 - 详情',
           },
@@ -65,6 +66,7 @@ export const router = createRouter({
         {
           path: '/nest/:id/comments',
           component: lazy(() => import('./pages/nest/comments')),
+          wrapper: null,
           meta: {
             title: '嵌套页 - 评论',
           },

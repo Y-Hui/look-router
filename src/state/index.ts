@@ -1,7 +1,14 @@
 import type { Blocker, History as HistoryImpl, Location, To, Update } from 'history'
 import { createBrowserHistory, createHashHistory } from 'history'
+import type { ComponentType } from 'react'
 
-import type { FlattenRoute, LookStackPage, MatchedRoute, RouteObject } from '../types'
+import type {
+  FlattenRoute,
+  LookStackPage,
+  MatchedRoute,
+  WrapperProps,
+  RouteObject,
+} from '../types'
 import { flattenRoutes } from '../utils/flattenRoutes'
 import type { LookHistoryItem } from './history'
 import LookHistory from './history'
@@ -45,11 +52,19 @@ export default class LookRouter {
 
   block: (blocker: Blocker) => () => void
 
-  constructor(args: { mode?: 'hash' | 'history'; routes: RouteObject[] }) {
-    const { mode = 'hash', routes } = args
+  globalWrapper?: ComponentType<WrapperProps> | null
+
+  constructor(args: {
+    mode?: 'hash' | 'history'
+    routes: RouteObject[]
+    globalWrapper?: ComponentType<WrapperProps> | null
+  }) {
+    const { mode = 'hash', routes, globalWrapper } = args
     this.instance = mode === 'history' ? createBrowserHistory() : createHashHistory()
-    this.block = this.instance.block
     this.routes = routes
+    this.globalWrapper = globalWrapper
+
+    this.block = this.instance.block
     this.flattenRoutes = flattenRoutes(routes)
     this.init()
   }

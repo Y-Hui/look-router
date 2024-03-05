@@ -1,3 +1,4 @@
+export { useLookPageVisible as useWatchVisible } from './components/context'
 export type { LinkProps } from './components/Link'
 export { default as Link } from './components/Link'
 export type { LookPageProps } from './components/LookPage'
@@ -16,14 +17,14 @@ export { default as useParams } from './hooks/useParams'
 export { default as useQuery } from './hooks/useQuery'
 export { default as useSearchParams } from './hooks/useSearchParams'
 export { default as useSetQuery } from './hooks/useSetQuery'
-export { default as useWatchVisible } from './hooks/useWatchVisible'
+export { default as useWatchVisibleEffect } from './hooks/useWatchVisibleEffect'
 export type {
   MatchedRoute,
   NestRouteObject,
-  PageComponentProps,
   Params,
   RouteObject,
   RouteObjectBase,
   SearchParams,
+  WrapperProps,
 } from './types/index'
 export * from './utils/createRouter'
