@@ -56,12 +56,12 @@ export function renderWithNestPage(args: RenderArgs): LookStackPage[] {
     children = [value]
   }
 
-  forEachRight(matches, (item) => {
+  forEachRight(matches, (item, index) => {
     const newChildren = getChildren()
     const page = renderPage({
       matched: item,
       children: newChildren,
-      matches,
+      matches: matches.slice(0, index + 1),
     })
     newChildren?.forEach((child) => {
       // eslint-disable-next-line no-param-reassign
