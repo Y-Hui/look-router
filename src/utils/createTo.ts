@@ -18,36 +18,37 @@ function resolvePathname(relativePath: string, fromPathname: string): string {
 
 export function createTo(toArg: To, matches: MatchedRoute[]): Partial<Path> {
   const to = typeof toArg === 'string' ? parsePath(toArg) : toArg
-  const { pathname: toPathname } = to
+  const { pathname: toPathname, search } = to
 
   if (
-    !toPathname ||
-    toPathname?.includes('#') ||
-    toPathname?.includes('?') ||
-    (to.search && to.search.includes('#'))
+    (toPathname && (toPathname?.includes('#') || toPathname?.includes('?'))) ||
+    (search && search.includes('#'))
   ) {
     throw Error(
       `\n<Link to="..."> Error\n` +
-        `1. missing pathname;\n` +
-        `2. pathname cannot contain # or /\n` +
-        `3. search cannot contain #\n`,
+        `1. pathname cannot contain # or /\n` +
+        `2. search cannot contain #\n`,
     )
-  }
-
-  if (toPathname.startsWith('/')) {
-    return to
   }
 
   const routePathnames = matches.map((x) => x.pathname)
 
-  let routePathnameIndex = routePathnames.length - 1
-  const toSegments = toPathname.split('/')
-  while (toSegments[0] === '..') {
-    toSegments.shift()
-    routePathnameIndex -= 1
+  // 处理 falsy
+  if (toPathname == null) {
+    const from = routePathnames[routePathnames.length - 1] || '/'
+    to.pathname = from
+  } else {
+    if (toPathname?.startsWith('/')) {
+      return to
+    }
+    let routePathnameIndex = routePathnames.length - 1
+    const toSegments = toPathname.split('/')
+    while (toSegments[0] === '..') {
+      toSegments.shift()
+      routePathnameIndex -= 1
+    }
+    const from = routePathnameIndex >= 0 ? routePathnames[routePathnameIndex] : '/'
+    to.pathname = resolvePathname(toSegments.join('/'), from)
   }
-  const from = routePathnameIndex >= 0 ? routePathnames[routePathnameIndex] : '/'
-  to.pathname = resolvePathname(toSegments.join('/'), from)
-
   return to
 }
