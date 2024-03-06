@@ -92,12 +92,8 @@ export default class LookStack {
         throw Error(`${args.pathname} does not exist`)
       }
       const returns = LookStack.getParents(route)
-      route.keepAlive = false
       returns.forEach((item) => {
         item.visible = true
-        if (item.children) {
-          item.keepAlive = item.children.some((x) => x.keepAlive)
-        }
       })
     }
     this.notifyListener()

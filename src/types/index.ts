@@ -62,7 +62,6 @@ export interface LookStackPage {
   search?: string
   params?: Params<string>
   route: RouteObject & { parentPath?: string }
-  keepAlive?: boolean
   matches: MatchedRoute[]
 }
 

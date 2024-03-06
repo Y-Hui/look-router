@@ -11,7 +11,6 @@ import type {
 } from '../types'
 import { createTo } from '../utils/createTo'
 import { flattenRoutes } from '../utils/flattenRoutes'
-import type { LookHistoryItem } from './history'
 import LookHistory from './history'
 import { getMatches } from './matches'
 import { renderSinglePage, renderWithNestPage } from './render'
@@ -256,11 +255,10 @@ export default class LookRouter {
     const { pathname, search } = location
     const args = { pathname, search }
 
-    const popped = this.history.popLast()
-    this.history.push(args)
+    this.history.switch(args)
 
     const pages = LookRouter.renderRoute(matches)
-    const newStack = this.diff(this.stack.stack, pages, popped)
+    const newStack = this.diff(this.stack.stack, pages)
     this.stack.setStack(newStack)
     this.stack.visible(args)
   }
@@ -280,7 +278,7 @@ export default class LookRouter {
   private diff = (
     oldPages: LookStackPage[],
     newPages: LookStackPage[],
-    popped?: LookHistoryItem,
+    // popped?: LookHistoryItem,
   ) => {
     if (oldPages.length === 0) {
       return newPages
@@ -293,25 +291,8 @@ export default class LookRouter {
 
     const result: LookStackPage[] = []
 
-    if (popped) {
-      const shouldKeepAliveItem = oldPages.find((item) => {
-        const key = LookHistory.encode({
-          pathname: item.pathname,
-          search: item.search ?? '',
-        })
-        return key === LookHistory.encode(popped)
-      })
-
-      if (shouldKeepAliveItem) {
-        LookStack.getParents(shouldKeepAliveItem).forEach((page) => {
-          // eslint-disable-next-line no-param-reassign
-          page.keepAlive = true
-        })
-      }
-    }
-
     const keepParentKey = new Set<string>()
-    const historyKey = this.history.value.map((x) => LookHistory.encode(x))
+    const historyKey = this.history.keys
     oldPages.forEach((x) => {
       if (!x.parent) return
       const currentKey = LookHistory.encode({
@@ -329,12 +310,7 @@ export default class LookRouter {
         search: item.search ?? '',
       })
       const count = this.history.countMap[key]
-      if (
-        count ||
-        newPagesMap.has(key) ||
-        item.keepAlive ||
-        keepParentKey.has(item.key)
-      ) {
+      if (count || newPagesMap.has(key) || keepParentKey.has(item.key)) {
         if (item.parent) {
           keepParentKey.add(item.parent.key)
         }
