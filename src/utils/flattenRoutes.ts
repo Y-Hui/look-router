@@ -1,4 +1,4 @@
-import type { FlattenRoute, RouteMeta, RouteObject } from '../types'
+import type { FlattenRoute, IndexRouteObject, RouteMeta, RouteObject } from '../types'
 import { joinPaths } from './path'
 
 const paramRe = /^:\w+$/
@@ -40,7 +40,7 @@ export function flattenRoutes(routes: RouteObject[]): FlattenRoute[] {
   const result: FlattenRoute[] = []
 
   const flatten = (
-    routesArr: RouteObject[],
+    routesArr: (IndexRouteObject | RouteObject)[],
     parentPath = '',
     parentsMeta: RouteMeta[] = [],
   ) => {
@@ -51,10 +51,14 @@ export function flattenRoutes(routes: RouteObject[]): FlattenRoute[] {
   }
 
   const flattenRoute = (
-    route: RouteObject,
+    route: IndexRouteObject | RouteObject,
     parentPath = '',
     parentsMeta: RouteMeta[] = [],
   ) => {
+    if ('index' in route) {
+      return
+    }
+
     const { children } = route
 
     const meta: RouteMeta = {

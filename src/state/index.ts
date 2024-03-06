@@ -6,9 +6,10 @@ import type {
   FlattenRoute,
   LookStackPage,
   MatchedRoute,
-  WrapperProps,
   RouteObject,
+  WrapperProps,
 } from '../types'
+import { createTo } from '../utils/createTo'
 import { flattenRoutes } from '../utils/flattenRoutes'
 import type { LookHistoryItem } from './history'
 import LookHistory from './history'
@@ -292,6 +293,23 @@ export default class LookRouter {
 
     const result: LookStackPage[] = []
 
+    if (popped) {
+      const shouldKeepAliveItem = oldPages.find((item) => {
+        const key = LookHistory.encode({
+          pathname: item.pathname,
+          search: item.search ?? '',
+        })
+        return key === LookHistory.encode(popped)
+      })
+
+      if (shouldKeepAliveItem) {
+        LookStack.getParents(shouldKeepAliveItem).forEach((page) => {
+          // eslint-disable-next-line no-param-reassign
+          page.keepAlive = true
+        })
+      }
+    }
+
     const keepParentKey = new Set<string>()
     const historyKey = this.history.value.map((x) => LookHistory.encode(x))
     oldPages.forEach((x) => {
@@ -311,11 +329,6 @@ export default class LookRouter {
         search: item.search ?? '',
       })
       const count = this.history.countMap[key]
-      const shouldKeepAlive = popped && key === LookHistory.encode(popped)
-      if (shouldKeepAlive) {
-        // eslint-disable-next-line no-param-reassign
-        item.keepAlive = true
-      }
       if (
         count ||
         newPagesMap.has(key) ||

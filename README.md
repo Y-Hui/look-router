@@ -98,5 +98,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 - [x] redirectTo
 - [x] 路由 meta
 - [x] WillPop
-- [ ] index 配置
+- [x] index 配置
 

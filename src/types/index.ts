@@ -18,19 +18,26 @@ export interface WrapperProps {
   children?: ReactNode
 }
 
+export interface IndexRouteObject {
+  index: true
+  component: ComponentType
+}
+
 export interface RouteObjectBase {
   path: string
-  index?: boolean
+  /**
+   * 重定向到其他页面，支持相对路径
+   */
   redirectTo?: To | ((location: Location) => To)
   component?: ComponentType
-  children?: RouteObject[]
+  children?: (RouteObject | IndexRouteObject)[]
   wrapper?: ComponentType<WrapperProps> | null
   meta?: Record<PropertyKey, unknown>
 }
 
 export interface NestRouteObject extends Omit<RouteObjectBase, 'component' | 'children'> {
   component: ComponentType<{ children: ReactNode | ReactElement }>
-  children: RouteObject[]
+  children: (RouteObject | IndexRouteObject)[]
 }
 
 export type RouteObject = RouteObjectBase | NestRouteObject

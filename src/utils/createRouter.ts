@@ -1,7 +1,7 @@
 import type { ComponentType } from 'react'
 
 import LookRouter from '../state'
-import type { WrapperProps, RouteObject } from '../types/index'
+import type { RouteObject, WrapperProps } from '../types/index'
 
 export interface CreateRouterArgs {
   mode?: 'hash' | 'history'

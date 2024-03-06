@@ -1,4 +1,4 @@
-import type { FC } from 'react'
+import type { FC, ReactNode } from 'react'
 import { createElement, useMemo } from 'react'
 
 import type { LookStackPage } from '../types'
@@ -15,7 +15,8 @@ const LookPageWrapper: FC<LookPageWrapperProps> = (props) => {
   const { data } = props
   const { route, pathname, visible, children } = data
 
-  const { globalWrapper } = useRouterCtx('<LookPageWrapper />').router
+  const { router } = useRouterCtx('<LookPageWrapper />')
+  const { globalWrapper } = router
 
   const PageComponent =
     route.wrapper === null ? null : route.wrapper || globalWrapper || LookPage
@@ -25,15 +26,14 @@ const LookPageWrapper: FC<LookPageWrapperProps> = (props) => {
     return { instance: data }
   }, [data])
 
-  const child = isEnableOutlet(route) ? (
-    <OutletContext.Provider value={children || null}>
-      {/* @ts-ignore */}
-      {createElement(RouteComponent)}
-    </OutletContext.Provider>
-  ) : (
-    // @ts-ignore
-    createElement(RouteComponent)
-  )
+  // @ts-ignore
+  let child: ReactNode = createElement(RouteComponent)
+
+  if (isEnableOutlet(route)) {
+    child = (
+      <OutletContext.Provider value={children || null}>{child}</OutletContext.Provider>
+    )
+  }
 
   return (
     <LookPageVisible.Provider value={visible}>
