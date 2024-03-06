@@ -1,15 +1,8 @@
-import type { ComponentType } from 'react'
-
+import type { LookRouterArgs } from '../state'
 import LookRouter from '../state'
-import type { RouteObject, WrapperProps } from '../types/index'
 
-export interface CreateRouterArgs {
-  mode?: 'hash' | 'history'
-  routes: RouteObject[]
-  globalWrapper?: ComponentType<WrapperProps> | null
-}
+export type CreateRouterArgs = LookRouterArgs
 
 export function createRouter(args: CreateRouterArgs): LookRouter {
-  const { mode = 'hash', routes, globalWrapper } = args
-  return new LookRouter({ mode, routes, globalWrapper })
+  return new LookRouter(args)
 }

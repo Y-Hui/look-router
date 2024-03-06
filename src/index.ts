@@ -19,9 +19,11 @@ export { default as useSearchParams } from './hooks/useSearchParams'
 export { default as useSetQuery } from './hooks/useSetQuery'
 export { default as useWatchVisibleEffect } from './hooks/useWatchVisibleEffect'
 export type {
+  IndexRouteObject,
   MatchedRoute,
   NestRouteObject,
   Params,
+  Path,
   RouteObject,
   RouteObjectBase,
   SearchParams,

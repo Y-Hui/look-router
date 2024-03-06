@@ -66,7 +66,10 @@ function matchRouteBranch(
   return result
 }
 
-export function getMatches(location: Location, routes: FlattenRoute[]) {
+export function getMatches(
+  location: Pick<Location, 'pathname' | 'search'>,
+  routes: FlattenRoute[],
+) {
   let result = null
   for (let i = 0; result === null && i < routes.length; i += 1) {
     const pathname = decodePath(location.pathname)

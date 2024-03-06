@@ -6,6 +6,7 @@ import type {
   FlattenRoute,
   LookStackPage,
   MatchedRoute,
+  Path,
   RouteObject,
   WrapperProps,
 } from '../types'
@@ -39,6 +40,20 @@ function createState<T>(initialValue: T) {
   }
 }
 
+export interface LookRouterArgs {
+  mode?: 'hash' | 'history'
+  routes: RouteObject[]
+  globalWrapper?: ComponentType<WrapperProps> | null
+  onBeforeEntering?: (
+    to: { location: Location; route?: RouteObject },
+    from?: Location,
+  ) => Path | Promise<Path>
+  onAfterEntering?: (
+    to: { location: Location; route: RouteObject },
+    from?: Location,
+  ) => void
+}
+
 export default class LookRouter {
   instance: HistoryImpl
 
@@ -52,17 +67,49 @@ export default class LookRouter {
 
   block: (blocker: Blocker) => () => void
 
-  globalWrapper?: ComponentType<WrapperProps> | null
+  globalWrapper?: LookRouterArgs['globalWrapper']
 
-  constructor(args: {
-    mode?: 'hash' | 'history'
-    routes: RouteObject[]
-    globalWrapper?: ComponentType<WrapperProps> | null
-  }) {
-    const { mode = 'hash', routes, globalWrapper } = args
+  private from?: Location
+
+  private updateFrom = () => {
+    this.from = { ...this.instance.location }
+  }
+
+  onBeforeEntering: (location: Location, matches?: MatchedRoute[]) => Promise<Path>
+
+  onAfterEntering: (matches: MatchedRoute[]) => void
+
+  constructor(args: LookRouterArgs) {
+    const {
+      mode = 'hash',
+      routes,
+      globalWrapper,
+      onBeforeEntering,
+      onAfterEntering,
+    } = args
     this.instance = mode === 'history' ? createBrowserHistory() : createHashHistory()
     this.routes = routes
     this.globalWrapper = globalWrapper
+    this.onBeforeEntering = async (location, matches) => {
+      if (!onBeforeEntering) return location
+      const nextTo = await Promise.resolve(
+        onBeforeEntering(
+          { location, route: matches?.[matches.length - 1].route },
+          this.from,
+        ),
+      )
+      return nextTo
+    }
+    this.onAfterEntering = (matches) => {
+      onAfterEntering?.(
+        {
+          location: this.instance.location,
+          route: matches[matches.length - 1].route,
+        },
+        this.from,
+      )
+      this.updateFrom()
+    }
 
     this.block = this.instance.block
     this.flattenRoutes = flattenRoutes(routes)
@@ -71,12 +118,31 @@ export default class LookRouter {
 
   private action = createState(Action.Pop)
 
+  static dispatchListener = (
+    location: Location,
+    listener: (location: Location, matches?: MatchedRoute[]) => void,
+    matches?: MatchedRoute[],
+  ) => {
+    listener?.(location, matches)
+  }
+
+  private listener = new Set<(location: Location, matches?: MatchedRoute[]) => void>()
+
+  listen = (listener: (location: Location, matches?: MatchedRoute[]) => void) => {
+    this.listener.add(listener)
+    return () => {
+      this.listener.delete(listener)
+    }
+  }
+
   private init = () => {
-    this.instance.listen((e) => {
-      const matches = this.listenImpl(e)
-      this.listener.forEach((fn) => {
-        LookRouter.dispatchListener(e.location, fn, matches)
-      })
+    this.instance.listen(async (e) => {
+      const matches = await this.listenImpl(e)
+      if (matches !== null) {
+        this.listener.forEach((fn) => {
+          LookRouter.dispatchListener(e.location, fn, matches)
+        })
+      }
     })
     this.replace(this.instance.location, this.instance.location.state)
   }
@@ -86,7 +152,7 @@ export default class LookRouter {
     this.history.clean()
   }
 
-  push = (to: To, state?: unknown) => {
+  push = async (to: To, state?: unknown) => {
     this.action.setState(Action.Push)
     this.instance.push(to, state)
   }
@@ -125,7 +191,7 @@ export default class LookRouter {
     this.instance.replace(args)
   }
 
-  private listenImpl = (e: Update): MatchedRoute[] | undefined => {
+  private listenImpl = async (e: Update): Promise<MatchedRoute[] | undefined | null> => {
     const { location } = e
 
     const currentAction = this.action.getState()
@@ -135,6 +201,15 @@ export default class LookRouter {
     }
 
     const matches = getMatches(location, this.flattenRoutes)
+    const nextTo = await this.onBeforeEntering(location, matches || undefined)
+    if (
+      nextTo.pathname !== location.pathname ||
+      (nextTo.hash || '') !== location.hash ||
+      (nextTo.search || '') !== location.search
+    ) {
+      this.instance.replace(nextTo, location.state)
+      return null
+    }
 
     this.action.reset()
 
@@ -172,24 +247,8 @@ export default class LookRouter {
         break
       }
     }
+    this.onAfterEntering(matches)
     return matches
-  }
-
-  static dispatchListener = (
-    location: Location,
-    listener: (location: Location, matches?: MatchedRoute[]) => void,
-    matches?: MatchedRoute[],
-  ) => {
-    listener?.(location, matches)
-  }
-
-  private listener = new Set<(location: Location, matches?: MatchedRoute[]) => void>()
-
-  listen = (listener: (location: Location, matches?: MatchedRoute[]) => void) => {
-    this.listener.add(listener)
-    return () => {
-      this.listener.delete(listener)
-    }
   }
 
   private static renderRoute = (matches: MatchedRoute[]): LookStackPage[] => {

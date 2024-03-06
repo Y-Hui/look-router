@@ -1,4 +1,4 @@
-import type { Location, To } from 'history'
+import type { Hash, Location, Pathname, Search, To } from 'history'
 import type { ComponentType, ReactElement, ReactNode } from 'react'
 
 export type Part<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
@@ -11,6 +11,12 @@ export type Mutable<T> = {
 
 export type Params<Key extends string = string> = {
   readonly [key in Key]: string | undefined | string[]
+}
+
+export interface Path {
+  pathname: Pathname
+  search?: Search
+  hash?: Hash
 }
 
 export interface WrapperProps {
