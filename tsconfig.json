@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "./demo-dist",
+    "outDir": "./dist",
     "sourceMap": false,
     "target": "es2016",
     "useDefineForClassFields": false,
@@ -15,7 +15,7 @@
     "esModuleInterop": true,
     "removeComments": false,
     "skipLibCheck": true,
-    "jsx": "react-jsx",
+    "jsx": "react",
     "lib": ["esnext", "dom", "DOM.Iterable"],
     "baseUrl": ".",
   },

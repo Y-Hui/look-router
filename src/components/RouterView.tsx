@@ -1,6 +1,6 @@
 import type { Location } from 'history'
 import type { FC, ReactNode } from 'react'
-import { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { useSyncExternalStore } from 'use-sync-external-store/shim'
 
 import { useLatestFn } from '../hooks/useLatestFn'

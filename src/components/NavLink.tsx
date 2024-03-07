@@ -5,7 +5,7 @@ import type {
   ReactNode,
   RefAttributes,
 } from 'react'
-import { forwardRef } from 'react'
+import React, { forwardRef } from 'react'
 
 import { useHref } from '../hooks/useHref'
 import useLocation from '../hooks/useLocation'

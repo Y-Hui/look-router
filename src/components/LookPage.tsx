@@ -1,5 +1,5 @@
 import type { CSSProperties, ForwardedRef, ReactElement } from 'react'
-import { forwardRef } from 'react'
+import React, { forwardRef } from 'react'
 
 import type { WrapperProps } from '../types'
 import { useLookPageVisible } from './context'

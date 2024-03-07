@@ -1,4 +1,5 @@
 import type { FC } from 'react'
+import React from 'react'
 
 import { getIndexRoute } from '../utils/getIndexRoute'
 import { useLookPageCtx, useOutletCtx } from './context'

@@ -1,5 +1,5 @@
 import type { FC, ReactNode } from 'react'
-import { createElement, useMemo } from 'react'
+import React, { createElement, useMemo } from 'react'
 
 import type { LookStackPage } from '../types'
 import type { LookPageCtxState } from './context'

@@ -6,7 +6,7 @@ import type {
   ForwardRefExoticComponent,
   RefAttributes,
 } from 'react'
-import { forwardRef } from 'react'
+import React, { forwardRef } from 'react'
 
 import { useHref } from '../hooks/useHref'
 import { useNavigate } from '../hooks/useNavigate'
@@ -49,6 +49,7 @@ function Link(props: LinkProps, ref: ForwardedRef<HTMLAnchorElement>) {
       {...rest}
       ref={ref}
       onClick={(e) => {
+        onClick?.(e)
         e.preventDefault()
         e.stopPropagation()
         navigate(to, { replace, switch: switchMode, clean })
