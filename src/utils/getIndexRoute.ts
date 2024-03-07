@@ -1,5 +1,6 @@
 import { createElement, type ReactNode } from 'react'
-import type { IndexRouteObject, RouteObject } from 'src/types'
+
+import type { IndexRouteObject, RouteObject } from '../types'
 
 export function getIndexRoute(route?: RouteObject): ReactNode {
   if (!route) return null

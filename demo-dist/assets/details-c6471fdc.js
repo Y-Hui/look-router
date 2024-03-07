@@ -1,0 +1,1 @@
+import{j as r}from"./preload-helper-d14b839a.js";import{W as t}from"./wrapper-817ada99.js";import"./clsx-0839fdbe.js";import"./main-ce890180.js";const p=()=>r.jsx(t,{children:r.jsx("div",{children:"Details"})});export{p as default};

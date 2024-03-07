@@ -1,22 +1,11 @@
 import clsx from 'clsx'
 import type { FC } from 'react'
 import { Suspense } from 'react'
-import { Navigate, NavLink, Outlet, useLocation, useParams } from 'react-router-dom'
+import { NavLink, Outlet } from 'react-router-dom'
 
 import AppBar from '@/normal/components/AppBar'
 
 const NestPage: FC = () => {
-  const params = useParams<{ id: string }>()
-  const { id } = params
-  console.log(params)
-
-  const location = useLocation()
-  console.log(location)
-
-  if (location.pathname === `/nest/${id}`) {
-    return <Navigate to={`/nest/${id}/details`} replace />
-  }
-
   return (
     <>
       <AppBar title="Nest" />
@@ -29,14 +18,18 @@ const NestPage: FC = () => {
       </div>
       <nav className="px-18 grid grid-cols-2">
         <NavLink
-          className={({ isActive }) => clsx({ 'text-blue-500': isActive })}
+          className={({ isActive }) =>
+            clsx('flex items-center justify-center', { 'text-blue-500': isActive })
+          }
           to="details"
           replace
         >
           详情
         </NavLink>
         <NavLink
-          className={({ isActive }) => clsx({ 'text-blue-500': isActive })}
+          className={({ isActive }) =>
+            clsx('flex items-center justify-center', { 'text-blue-500': isActive })
+          }
           to="comments"
           replace
         >

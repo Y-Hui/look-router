@@ -1,19 +1,11 @@
 import clsx from 'clsx'
-import { NavLink, Outlet, useLocation, useParams } from 'look-router'
+import { NavLink, Outlet } from 'look-router'
 import type { FC } from 'react'
 import { Suspense } from 'react'
 
 import AppBar from '@/look/components/AppBar'
 
 const NestPage: FC = () => {
-  const params = useParams<{ id: string }>()
-  const location = useLocation()
-  // console.log(location)
-
-  const id = 12
-  // console.log(params)
-  // console.log(`/nest/${id}/comments`, id)
-
   return (
     <>
       <AppBar title="Nest" />
@@ -26,14 +18,18 @@ const NestPage: FC = () => {
       </div>
       <nav className="px-18 grid grid-cols-2">
         <NavLink
-          className={({ isActive }) => clsx({ 'text-blue-500': isActive })}
+          className={({ isActive }) =>
+            clsx('flex items-center justify-center', { 'text-blue-500': isActive })
+          }
           to="details"
           switch
         >
           详情
         </NavLink>
         <NavLink
-          className={({ isActive }) => clsx({ 'text-blue-500': isActive })}
+          className={({ isActive }) =>
+            clsx('flex items-center justify-center', { 'text-blue-500': isActive })
+          }
           to="comments"
           switch
         >

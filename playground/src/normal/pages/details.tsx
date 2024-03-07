@@ -1,5 +1,5 @@
 import { type FC } from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 
 import AppBar from '../components/AppBar'
 
@@ -61,6 +61,9 @@ const DetailsPage: FC = () => {
           Update URL Search
         </button>
       </div>
+      <Link className="block py-10 text-blue-500 underline text-center" to="/nest/12">
+        /nest/12
+      </Link>
     </>
   )
 }

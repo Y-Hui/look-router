@@ -2,6 +2,11 @@ import { createRouter } from 'look-router'
 import { lazy } from 'react'
 
 export const router = createRouter({
+  onAfterEntering(to) {
+    const { route } = to
+    const title = `${route?.meta?.title || ''}`
+    document.title = title
+  },
   routes: [
     {
       path: '/',
@@ -51,10 +56,11 @@ export const router = createRouter({
       meta: {
         title: '嵌套页',
       },
-      redirectTo: (e) => {
-        return `${e.pathname}/details`
-      },
       children: [
+        {
+          index: true,
+          component: lazy(() => import('./pages/nest/default')),
+        },
         {
           path: '/nest/:id/details',
           component: lazy(() => import('./pages/nest/details')),

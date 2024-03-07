@@ -1,4 +1,4 @@
-import { useParams, useSearchParams } from 'look-router'
+import { Link, useParams, useSearchParams } from 'look-router'
 import { type FC } from 'react'
 
 import AppBar from '@/look/components/AppBar'
@@ -10,7 +10,6 @@ const DetailsPage: FC = () => {
   return (
     <>
       <AppBar title="详情页" />
-
       {params.id === '50' && (
         <div className="mt-20 mx-18 p-10 text-orange-500 bg-orange-100 rounded-[14px] text-14">
           <p>很好！你加载了多次数据成功找到了第 50 个元素</p>
@@ -43,6 +42,9 @@ const DetailsPage: FC = () => {
           Update URL Search
         </button>
       </div>
+      <Link className="block py-10 text-blue-500 underline text-center" to="/nest/12">
+        /nest/12
+      </Link>
     </>
   )
 }

@@ -4,7 +4,7 @@ import Wrapper from './wrapper'
 
 const Comments: FC = () => {
   return (
-    <Wrapper style={{ display: 'flex' }}>
+    <Wrapper>
       <div>Comments</div>
     </Wrapper>
   )

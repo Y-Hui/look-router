@@ -27,20 +27,24 @@ export const router = createHashRouter([
   {
     path: '/details/:id',
     element: createElement(lazy(() => import('./pages/details'))),
+    children: [
+      {
+        path: 'test',
+        element: createElement(lazy(() => import('./pages/nest/default'))),
+      },
+    ],
   },
   {
     path: '/nest/:id',
     element: createElement(lazy(() => import('./pages/nest/index'))),
     children: [
       {
+        index: true,
+        element: createElement(lazy(() => import('./pages/nest/default'))),
+      },
+      {
         path: '/nest/:id/details',
         element: createElement(lazy(() => import('./pages/nest/details'))),
-        // children: [
-        //   {
-        //     path: '/nest/:id/details/test',
-        //     element: createElement(lazy(() => import('./pages/nest/details'))),
-        //   },
-        // ],
       },
       {
         path: '/nest/:id/comments',
@@ -53,3 +57,6 @@ export const router = createHashRouter([
     element: createElement(lazy(() => import('./pages/404'))),
   },
 ])
+
+// @ts-ignore
+window.router = router
