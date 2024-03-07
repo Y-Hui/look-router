@@ -1,5 +1,7 @@
-import { parsePath, type Path, type To } from 'history'
-import type { MatchedRoute } from 'src/types'
+import { parsePath, type To } from 'history'
+
+import type { MatchedRoute, Path } from '../types'
+import { normalizeHash, normalizeSearch } from './path'
 
 function resolvePathname(relativePath: string, fromPathname: string): string {
   const segments = fromPathname.replace(/\/+$/, '').split('/')
@@ -16,7 +18,28 @@ function resolvePathname(relativePath: string, fromPathname: string): string {
   return segments.length > 1 ? segments.join('/') : '/'
 }
 
-export function createTo(toArg: To, matches: MatchedRoute[]): Partial<Path> {
+function resolvePath(to: To, fromPathname = '/'): Path {
+  const {
+    pathname: toPathname,
+    search = '',
+    hash = '',
+  } = typeof to === 'string' ? parsePath(to) : to
+
+  // eslint-disable-next-line no-nested-ternary
+  const pathname = toPathname
+    ? toPathname.startsWith('/')
+      ? toPathname
+      : resolvePathname(toPathname, fromPathname)
+    : fromPathname
+
+  return {
+    pathname,
+    search: normalizeSearch(search),
+    hash: normalizeHash(hash),
+  }
+}
+
+export function createTo(toArg: To, matches: MatchedRoute[]): Path {
   const to = typeof toArg === 'string' ? parsePath(toArg) : toArg
   const { pathname: toPathname, search } = to
 
@@ -33,22 +56,23 @@ export function createTo(toArg: To, matches: MatchedRoute[]): Partial<Path> {
 
   const routePathnames = matches.map((x) => x.pathname)
 
+  let from: string
   // 处理 falsy
   if (toPathname == null) {
-    const from = routePathnames[routePathnames.length - 1] || '/'
-    to.pathname = from
+    from = routePathnames[routePathnames.length - 1] || '/'
   } else {
-    if (toPathname?.startsWith('/')) {
-      return to
-    }
+    const isPathRelative = !toPathname.startsWith('/')
     let routePathnameIndex = routePathnames.length - 1
-    const toSegments = toPathname.split('/')
-    while (toSegments[0] === '..') {
-      toSegments.shift()
-      routePathnameIndex -= 1
+    if (!isPathRelative && toPathname.startsWith('..')) {
+      const toSegments = toPathname.split('/')
+      while (toSegments[0] === '..') {
+        toSegments.shift()
+        routePathnameIndex -= 1
+      }
+      to.pathname = toSegments.join('/')
     }
-    const from = routePathnameIndex >= 0 ? routePathnames[routePathnameIndex] : '/'
-    to.pathname = resolvePathname(toSegments.join('/'), from)
+    from = routePathnameIndex >= 0 ? routePathnames[routePathnameIndex] : '/'
   }
-  return to
+  const path = resolvePath(to, from)
+  return path
 }

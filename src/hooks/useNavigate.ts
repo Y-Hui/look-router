@@ -1,7 +1,8 @@
 import type { To } from 'history'
-import { useCallback } from 'react'
 
-import { useRouterCtx } from '../components/context'
+import { useLookPageCtx, useRouterCtx } from '../components/context'
+import { createTo } from '../utils/createTo'
+import { useLatestFn } from './useLatestFn'
 
 export interface NavigateOpts {
   replace?: boolean
@@ -22,25 +23,24 @@ interface NavigateFunction {
 
 export function useNavigate(): NavigateFunction {
   const { router } = useRouterCtx('useNavigate')
+  const { instance } = useLookPageCtx('useNavigate')
 
-  return useCallback(
-    (to: To | number, opts: NavigateOpts = {}) => {
-      const { replace = false, state, clean } = opts
-      if (typeof to === 'number') {
-        router.go(to)
-        return
-      }
-      if (clean) {
-        router.clean()
-      }
-      if (opts?.switch) {
-        router.switch(to, state)
-      } else if (replace) {
-        router.replace(to, state)
-      } else {
-        router.push(to, state)
-      }
-    },
-    [router],
-  )
+  return useLatestFn((to: To | number, opts: NavigateOpts = {}) => {
+    const { replace = false, state, clean } = opts
+    if (typeof to === 'number') {
+      router.go(to)
+      return
+    }
+    const nextTo = createTo(to, instance.matches)
+    if (clean) {
+      router.clean()
+    }
+    if (opts?.switch) {
+      router.switch(nextTo, state)
+    } else if (replace) {
+      router.replace(nextTo, state)
+    } else {
+      router.push(nextTo, state)
+    }
+  })
 }
