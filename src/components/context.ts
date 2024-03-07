@@ -9,6 +9,10 @@ export interface RouterViewCtxState {
 
 export const RouterViewCtx = createContext<RouterViewCtxState | null>(null)
 
+if (__DEV__) {
+  RouterViewCtx.displayName = 'RouterViewCtx'
+}
+
 export function useRouterCtx(hookName: string) {
   const ctx = useContext(RouterViewCtx)
   if (ctx === null) {
@@ -23,6 +27,10 @@ export interface LookPageCtxState {
 
 export const LookPageCtx = createContext<LookPageCtxState | null>(null)
 
+if (__DEV__) {
+  LookPageCtx.displayName = 'LookPageCtx'
+}
+
 export function useLookPageCtx(hookName: string) {
   const ctx = useContext(LookPageCtx)
   if (ctx === null) {
@@ -32,7 +40,10 @@ export function useLookPageCtx(hookName: string) {
 }
 
 export const OutletContext = createContext<LookStackPage[] | null>(null)
-OutletContext.displayName = 'OutletContext'
+
+if (__DEV__) {
+  OutletContext.displayName = 'OutletContext'
+}
 
 export function useOutletCtx() {
   const ctx = useContext(OutletContext)
@@ -40,6 +51,10 @@ export function useOutletCtx() {
 }
 
 export const LookPageVisible = createContext<boolean | null>(null)
+
+if (__DEV__) {
+  LookPageVisible.displayName = 'LookPageVisible'
+}
 
 export function useLookPageVisible() {
   const ctx = useContext(LookPageVisible)

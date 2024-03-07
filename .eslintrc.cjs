@@ -13,6 +13,7 @@ module.exports = {
   ],
   globals: {
     JSX: true,
+    __DEV__: true,
   },
   parser: '@typescript-eslint/parser',
   parserOptions: {

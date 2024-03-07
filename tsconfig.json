@@ -1,10 +1,12 @@
 {
+  "files": ["./src/index.ts"],
   "compilerOptions": {
     "outDir": "./dist",
     "sourceMap": false,
-    "target": "es2016",
     "useDefineForClassFields": false,
-    "module": "esnext",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "target": "ES2020",
+    "module": "ES2020",
     "moduleResolution": "node",
     "allowJs": false,
     "strict": true,
@@ -15,10 +17,11 @@
     "esModuleInterop": true,
     "removeComments": false,
     "skipLibCheck": true,
+    "declaration": true,
+    "emitDeclarationOnly": true,
     "jsx": "react",
-    "lib": ["esnext", "dom", "DOM.Iterable"],
     "baseUrl": ".",
   },
-  "include": ["./src/**/*"],
+  "include": ["./src/**/*", "./src/global.d.ts"],
   "exclude": ["node_modules", "dist", "demo-dist"]
 }
