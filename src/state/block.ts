@@ -3,7 +3,7 @@ import type { Blocker, BlockerArgs } from '../types'
 export function createBlock() {
   const blockerFunctions = new Set<Blocker>()
 
-  let block = true
+  let block = false
 
   return {
     get isBlock() {
