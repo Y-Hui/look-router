@@ -2,7 +2,6 @@ import type { FC, ReactNode } from 'react'
 import { createElement, useMemo } from 'react'
 
 import type { LookStackPage } from '../types'
-import isEnableOutlet from '../utils/isEnableOutlet'
 import type { LookPageCtxState } from './context'
 import { LookPageCtx, LookPageVisible, OutletContext, useRouterCtx } from './context'
 import LookPage from './LookPage'
@@ -26,14 +25,12 @@ const LookPageWrapper: FC<LookPageWrapperProps> = (props) => {
     return { instance: data }
   }, [data])
 
-  // @ts-ignore
-  let child: ReactNode = createElement(RouteComponent)
-
-  if (isEnableOutlet(route)) {
-    child = (
-      <OutletContext.Provider value={children || null}>{child}</OutletContext.Provider>
-    )
-  }
+  const child: ReactNode = (
+    <OutletContext.Provider value={children || null}>
+      {/* @ts-ignore */}
+      {createElement(RouteComponent)}
+    </OutletContext.Provider>
+  )
 
   return (
     <LookPageVisible.Provider value={visible}>
