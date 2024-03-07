@@ -1,13 +1,13 @@
-import type { Transition } from 'history'
 import type { FC, ReactNode } from 'react'
 import { useEffect } from 'react'
 
 import { useLatestFn } from '../hooks/useLatestFn'
-import { useRouterCtx } from './context'
+import type { Blocker } from '../types'
+import { useLookPageVisible, useRouterCtx } from './context'
 
 export interface WillPopProps {
   children: ReactNode
-  onWillPop: (unblock: () => void, tx: Transition) => void
+  onWillPop: Blocker
 }
 
 const WillPop: FC<WillPopProps> = (props) => {
@@ -16,15 +16,13 @@ const WillPop: FC<WillPopProps> = (props) => {
   const { router } = useRouterCtx('<WillPop />')
 
   const onWillPopHandle = useLatestFn(onWillPop)
+  const visible = useLookPageVisible()
   useEffect(() => {
-    const unblock = router.block((tx) => {
-      onWillPopHandle(unblock, tx)
-    })
-    return unblock
-  }, [router, onWillPopHandle])
+    if (!visible) return
+    return router.block(onWillPopHandle)
+  }, [onWillPopHandle, router, visible])
 
-  // eslint-disable-next-line react/jsx-no-useless-fragment
-  return <>{children}</>
+  return children || null
 }
 
 export default WillPop

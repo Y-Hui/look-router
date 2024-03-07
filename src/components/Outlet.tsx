@@ -8,15 +8,16 @@ const Outlet: FC = () => {
   const outlet = useOutletCtx()
   const { instance } = useLookPageCtx('<Outlet />')
 
-  if (outlet === null || outlet.length === 0) {
+  if (!outlet || outlet.length === 0) {
     const index = getIndexRoute(instance.route)
     if (index !== null) {
       return index
     }
   }
 
-  // eslint-disable-next-line react/jsx-no-useless-fragment
-  return <>{outlet?.map((item) => <LookPageWrapper key={item.key} data={item} />)}</>
+  if (!outlet) return null
+
+  return outlet.map((item) => <LookPageWrapper key={item.key} data={item} />)
 }
 
 export default Outlet

@@ -1,4 +1,4 @@
-import type { Blocker, History as HistoryImpl, Location, To, Update } from 'history'
+import type { Location } from 'history'
 import { createBrowserHistory, createHashHistory } from 'history'
 import type { ComponentType } from 'react'
 
@@ -14,31 +14,10 @@ import { createTo } from '../utils/createTo'
 import { flattenRoutes } from '../utils/flattenRoutes'
 import LookHistory from './history'
 import { getMatches } from './matches'
+import type { ProxyHistory, Update } from './proxy-history'
+import { Action, proxyHistory } from './proxy-history'
 import { renderSinglePage, renderWithNestPage } from './render'
 import LookStack from './stack'
-
-export const enum Action {
-  Pop = 'POP',
-  Push = 'PUSH',
-  Replace = 'REPLACE',
-  Switch = 'SWITCH',
-  UpdateSearch = 'UPDATE_SEARCH',
-}
-
-function createState<T>(initialValue: T) {
-  const scope = { current: initialValue }
-  return {
-    getState() {
-      return scope.current
-    },
-    setState(value: T) {
-      scope.current = value
-    },
-    reset() {
-      scope.current = initialValue
-    },
-  }
-}
 
 export interface LookRouterArgs {
   mode?: 'hash' | 'history'
@@ -55,7 +34,17 @@ export interface LookRouterArgs {
 }
 
 export default class LookRouter {
-  instance: HistoryImpl
+  instance: ProxyHistory
+
+  block: ProxyHistory['block']
+
+  push: ProxyHistory['push']
+
+  replace: ProxyHistory['replace']
+
+  go: ProxyHistory['go']
+
+  switch: ProxyHistory['switch']
 
   history = new LookHistory()
 
@@ -64,8 +53,6 @@ export default class LookRouter {
   flattenRoutes: FlattenRoute[]
 
   routes: RouteObject[]
-
-  block: (blocker: Blocker) => () => void
 
   globalWrapper?: LookRouterArgs['globalWrapper']
 
@@ -87,9 +74,17 @@ export default class LookRouter {
       onBeforeEntering,
       onAfterEntering,
     } = args
-    this.instance = mode === 'history' ? createBrowserHistory() : createHashHistory()
+    this.instance = proxyHistory(
+      mode === 'history' ? createBrowserHistory() : createHashHistory(),
+    )
     this.routes = routes
     this.globalWrapper = globalWrapper
+    this.block = this.instance.block
+    this.push = this.instance.push
+    this.replace = this.instance.replace
+    this.go = this.instance.go
+    this.switch = this.instance.switch
+
     this.onBeforeEntering = async (location, matches) => {
       if (!onBeforeEntering) return location
       const nextTo = await Promise.resolve(
@@ -100,6 +95,7 @@ export default class LookRouter {
       )
       return nextTo
     }
+
     this.onAfterEntering = (matches) => {
       onAfterEntering?.(
         {
@@ -110,13 +106,9 @@ export default class LookRouter {
       )
       this.updateFrom()
     }
-
-    this.block = this.instance.block
     this.flattenRoutes = flattenRoutes(routes)
     this.init()
   }
-
-  private action = createState(Action.Pop)
 
   static dispatchListener = (
     location: Location,
@@ -152,26 +144,6 @@ export default class LookRouter {
     this.history.clean()
   }
 
-  push = async (to: To, state?: unknown) => {
-    this.action.setState(Action.Push)
-    this.instance.push(to, state)
-  }
-
-  replace = (to: To, state?: unknown) => {
-    this.action.setState(Action.Replace)
-    this.instance.replace(to, state)
-  }
-
-  go = (delta: number) => {
-    this.action.setState(Action.Pop)
-    this.instance.go(delta)
-  }
-
-  switch = (to: To, state?: unknown) => {
-    this.action.setState(Action.Switch)
-    this.instance.replace(to, state)
-  }
-
   updateSearch = (location: Location, oldSearch: string) => {
     const { pathname, search } = location
     const target = this.stack.find({ pathname: location.pathname, search: oldSearch })
@@ -186,17 +158,13 @@ export default class LookRouter {
     this.history.push(args)
 
     this.stack.setStack(this.stack.stack.slice())
-    this.stack.notifyListener()
-    this.action.setState(Action.UpdateSearch)
-    this.instance.replace(args)
+    this.instance.updateSearch(location)
   }
 
   private listenImpl = async (e: Update): Promise<MatchedRoute[] | undefined | null> => {
-    const { location } = e
+    const { location, action: currentAction } = e
 
-    const currentAction = this.action.getState()
     if (currentAction === Action.UpdateSearch) {
-      this.action.reset()
       return
     }
 
@@ -207,11 +175,9 @@ export default class LookRouter {
       (nextTo.hash || '') !== location.hash ||
       (nextTo.search || '') !== location.search
     ) {
-      this.instance.replace(nextTo, location.state)
+      this.replace(nextTo, location.state)
       return null
     }
-
-    this.action.reset()
 
     if (!matches) {
       throw Error(`${location.pathname} does not exist`)
@@ -334,11 +300,7 @@ export default class LookRouter {
     return result
   }
 
-  private diff = (
-    oldPages: LookStackPage[],
-    newPages: LookStackPage[],
-    // popped?: LookHistoryItem,
-  ) => {
+  private diff = (oldPages: LookStackPage[], newPages: LookStackPage[]) => {
     if (oldPages.length === 0) {
       return newPages
     }

@@ -48,6 +48,14 @@ export interface NestRouteObject extends Omit<RouteObjectBase, 'component' | 'ch
 
 export type RouteObject = RouteObjectBase | NestRouteObject
 
+export type BlockerArgs = {
+  proceed: () => void
+  to: Path
+  from: Path
+}
+
+export type Blocker = (args: BlockerArgs) => void
+
 /**
  * @private
  */
