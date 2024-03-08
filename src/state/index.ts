@@ -144,7 +144,7 @@ export default class LookRouter {
     this.history.clean()
   }
 
-  updateSearch = (location: Location, oldSearch: string) => {
+  updateSearch = (location: Location, routeKey: string, oldSearch: string) => {
     const { pathname, search } = location
     const target = this.stack.find({ pathname: location.pathname, search: oldSearch })
     if (!target) {
@@ -153,7 +153,7 @@ export default class LookRouter {
       return
     }
     target.search = search
-    const args = { pathname, search }
+    const args = { pathname, search, routeKey }
     this.history.updateSearch(args)
 
     this.stack.setStack(this.stack.stack.slice())
@@ -189,7 +189,11 @@ export default class LookRouter {
         typeof redirectTo === 'function' ? redirectTo(location) : redirectTo,
         matches,
       )
-      this.history.push({ pathname: location.pathname, search: location.search })
+      this.history.push({
+        pathname: location.pathname,
+        search: location.search,
+        routeKey: matched.routeKey,
+      })
       this.replace(to)
       return
     }
@@ -226,12 +230,13 @@ export default class LookRouter {
 
   private routerPush = (location: Location, matches: MatchedRoute[]) => {
     const { pathname, search } = location
-    const args = { pathname, search }
 
     if (!Array.isArray(matches) || matches?.length === 0) {
       throw Error('[look-router]: Route does not exist')
     }
 
+    const matched = matches[matches.length - 1]
+    const args = { pathname, search, routeKey: matched.routeKey }
     this.history.push(args)
 
     // 跳转新页面时发现页面已存在
@@ -247,7 +252,8 @@ export default class LookRouter {
   private routerReplace = (location: Location, matches: MatchedRoute[]) => {
     // 此参数为要展示的页面
     const { pathname, search } = location
-    const args = { pathname, search }
+    const matched = matches[matches.length - 1]
+    const args = { pathname, search, routeKey: matched.routeKey }
 
     this.history.popLast()
     this.history.push(args)
@@ -260,24 +266,27 @@ export default class LookRouter {
   private routerPop = (location: Location, matches: MatchedRoute[]) => {
     // 此参数为要展示的页面
     const { pathname, search } = location
+    const matched = matches[matches.length - 1]
+    const args = { pathname, search, routeKey: matched.routeKey }
 
     // pop 时发现没有页面（浏览器前进、后退按钮）
-    if (!this.history.has({ pathname, search })) {
+    if (!this.history.has(args)) {
       this.routerReplace(location, matches)
       return
     }
 
-    this.history.pop({ pathname, search })
+    this.history.pop(args)
     const pages = LookRouter.renderRoute(matches)
     const newStack = this.diff(this.stack.stack, pages)
     this.stack.setStack(newStack)
-    this.stack.visible({ pathname, search })
+    this.stack.visible(args)
   }
 
   private routerSwitch = (location: Location, matches: MatchedRoute[]) => {
     // 此参数为要展示的页面
     const { pathname, search } = location
-    const args = { pathname, search }
+    const matched = matches[matches.length - 1]
+    const args = { pathname, search, routeKey: matched.routeKey }
 
     this.history.switch(args)
 
@@ -293,6 +302,7 @@ export default class LookRouter {
       const key = LookHistory.encode({
         pathname: item.pathname,
         search: item.search ?? '',
+        routeKey: item.routeKey,
       })
       result.set(key, item)
     })
@@ -318,6 +328,7 @@ export default class LookRouter {
       const currentKey = LookHistory.encode({
         pathname: x.pathname,
         search: x.search || '',
+        routeKey: x.routeKey,
       })
       if (historyKey.includes(currentKey)) {
         keepParentKey.add(x.parent.key)
@@ -328,6 +339,7 @@ export default class LookRouter {
       const key = LookHistory.encode({
         pathname: item.pathname,
         search: item.search ?? '',
+        routeKey: item.routeKey,
       })
       const count = this.history.countMap[key]
       if (count || newPagesMap.has(key) || keepParentKey.has(item.key)) {

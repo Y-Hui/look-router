@@ -3,6 +3,7 @@ import { findLastIndex } from '../utils/findLastIndex'
 export interface LookHistoryItem {
   pathname: string
   search: string
+  routeKey: string
 }
 
 class LookHistory {
@@ -17,7 +18,11 @@ class LookHistory {
   value: LookHistoryItem[][] = []
 
   static eq(v1: LookHistoryItem, v2: LookHistoryItem) {
-    return v1.pathname === v2.pathname && v1.search === v2.search
+    return (
+      v1.pathname === v2.pathname &&
+      v1.search === v2.search &&
+      v1.routeKey === v2.routeKey
+    )
   }
 
   push = (history: LookHistoryItem) => {
@@ -79,7 +84,7 @@ class LookHistory {
   }
 
   static encode(value: LookHistoryItem) {
-    return `${value.pathname}${value.search}`
+    return `[${value.pathname}][${value.search}][${value.routeKey}]`
   }
 
   get countMap() {
