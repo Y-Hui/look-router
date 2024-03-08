@@ -18,6 +18,7 @@ function renderPage(args: RenderPageArgs): LookStackPage {
   return {
     visible: false,
     key: globalKey.new(),
+    routeKey: matched.routeKey,
 
     pathname,
     children,
@@ -25,7 +26,7 @@ function renderPage(args: RenderPageArgs): LookStackPage {
 
     search,
     params,
-    route: { ...route, parentPath: undefined },
+    route: { ...route, parentRouteKey: undefined },
     matches,
   }
 }
@@ -54,7 +55,7 @@ export function renderWithNestPage(args: RenderArgs): LookStackPage[] {
       // eslint-disable-next-line no-param-reassign
       child.parent = page
       // eslint-disable-next-line no-param-reassign
-      child.route.parentPath = page.route.path
+      child.route.parentRouteKey = page.routeKey
     })
     result.unshift(page)
     children = [page]

@@ -90,10 +90,11 @@ export interface LookStackPage {
   pathname: string
   children?: LookStackPage[]
   parent?: LookStackPage
+  routeKey: string
 
   search?: string
   params?: Params<string>
-  route: RouteObject & { parentPath?: string }
+  route: RouteObject & { parentRouteKey?: string }
   matches: MatchedRoute[]
 }
 
@@ -109,9 +110,10 @@ export type FlattenRoute = {
 /**
  * @private
  */
-export type RouteMeta = { relativePath: string; route: RouteObject }
+export type RouteMeta = { relativePath: string; route: RouteObject; routeKey: string }
 
 export type MatchedRoute = {
+  routeKey: string
   /** 路由参数 */
   params: Params
   /** 真实路由 */

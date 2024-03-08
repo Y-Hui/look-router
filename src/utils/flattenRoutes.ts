@@ -38,6 +38,7 @@ function computeScore(path: string, index?: boolean) {
 
 export function flattenRoutes(routes: RouteObject[]): FlattenRoute[] {
   const result: FlattenRoute[] = []
+  let key = 0
 
   const flatten = (
     routesArr: (IndexRouteObject | RouteObject)[],
@@ -64,6 +65,7 @@ export function flattenRoutes(routes: RouteObject[]): FlattenRoute[] {
     const meta: RouteMeta = {
       relativePath: route.path,
       route,
+      routeKey: `route:${(key += 1)}`,
     }
 
     if (meta.relativePath.startsWith('/')) {

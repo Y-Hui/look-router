@@ -307,7 +307,7 @@ export default class LookRouter {
     const newPagesMap = LookRouter.transformLookStackPageToMap(newPages)
 
     const getChildren = (pages: LookStackPage[], parent: LookStackPage) => {
-      return pages.filter((item) => item.route.parentPath === parent.route.path)
+      return pages.filter((item) => item.route.parentRouteKey === parent.routeKey)
     }
 
     const result: LookStackPage[] = []

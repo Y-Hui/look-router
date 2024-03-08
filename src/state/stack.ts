@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-plusplus */
 import type { LookStackPage, Part } from '../types'
+import { findLastIndex } from '../utils/findLastIndex'
 import { globalKey } from '../utils/globalKey'
 
 interface QueryItem {
@@ -87,7 +88,8 @@ export default class LookStack {
       item.visible = false
     })
     if (args !== undefined) {
-      const route = this.find(args)
+      const index = findLastIndex(this.stack, (x) => LookStack.eq(args, x))
+      const route = this.stack[index]
       if (!route) {
         throw Error(`${args.pathname} does not exist`)
       }

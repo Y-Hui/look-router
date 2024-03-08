@@ -17,7 +17,7 @@ function matchRouteBranch(
   let matchedPathname: string = '/'
   for (let j = 0; j < routesMeta.length; j += 1) {
     const meta = routesMeta[j]
-    const { route } = meta
+    const { route, routeKey } = meta
     const end = j === routesMeta.length - 1
     const { matcher, compiledParams } = compilePath(meta.relativePath, end)
     const remainingPathname =
@@ -53,6 +53,7 @@ function matchRouteBranch(
       route,
       pathnameBase: normalizePathname(joinPaths([matchedPathname, value.pathnameBase])),
       search: '',
+      routeKey,
     }
     if (newItem.pathname === pathname && search.length > 0) {
       newItem.search = search.startsWith('?') ? search : `?${search}`
