@@ -37,6 +37,16 @@ class LookHistory {
     }
   }
 
+  updateSearch = (history: LookHistoryItem) => {
+    const value = this.value.pop()!
+    const index = findLastIndex(value, (x) => x.pathname === history.pathname)
+    const target = value[index]
+    if (target) {
+      value[index].search = history.search
+      this.value.push(value)
+    }
+  }
+
   popLast = () => {
     const value = this.value.pop()
     return value ? value[value.length - 1] : value

@@ -154,8 +154,7 @@ export default class LookRouter {
     }
     target.search = search
     const args = { pathname, search }
-    this.history.popLast()
-    this.history.push(args)
+    this.history.updateSearch(args)
 
     this.stack.setStack(this.stack.stack.slice())
     this.instance.updateSearch(location)
