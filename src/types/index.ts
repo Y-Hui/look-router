@@ -24,6 +24,24 @@ export interface WrapperProps {
   children?: ReactNode
 }
 
+/**
+ * Interface to type `meta` fields in route records.
+ *
+ * @example
+ *
+ * ```ts
+ * // typings.d.ts or router.ts
+ * import 'look-router';
+ *
+ * declare module 'look-router' {
+ *   interface Meta {
+ *     requiresAuth?: boolean
+ *   }
+ *  }
+ * ```
+ */
+export declare interface Meta extends Record<string | number | symbol, unknown> {}
+
 export interface IndexRouteObject {
   index: true
   component: ComponentType
@@ -38,7 +56,7 @@ export interface RouteObjectBase {
   component?: ComponentType
   children?: (RouteObject | IndexRouteObject)[]
   wrapper?: ComponentType<WrapperProps> | null
-  meta?: Record<PropertyKey, unknown>
+  meta?: Meta
 }
 
 export interface NestRouteObject extends Omit<RouteObjectBase, 'component' | 'children'> {

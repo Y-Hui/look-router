@@ -21,6 +21,7 @@ export { default as useWatchVisibleEffect } from './hooks/useWatchVisibleEffect'
 export type {
   IndexRouteObject,
   MatchedRoute,
+  Meta,
   NestRouteObject,
   Params,
   Path,
