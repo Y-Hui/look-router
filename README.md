@@ -74,9 +74,26 @@ interface RouterObject {
   wrapper?: ComponentType<WrapperProps> | null
   
   // 自定义路由元信息
-  meta?: Record<PropertyKey, unknown>
+  meta?: Record<string | number | symbol, unknown>
 }
 ```
+
+### meta 类型定义
+
+使用一个 `.ts` 或 `.d.ts` 文件为 meta 字段添加类型，或者直接写在 `createRouter` 上方。
+
+```tsx
+declare module 'look-router' {
+  interface Meta {
+    title: string
+    requiresAuth?: boolean
+  }
+}
+
+const router = createRouter(...)
+```
+
+
 
 ### 路由模式
 
@@ -136,7 +153,7 @@ createRouter({
     }
     
     // 继续执行导航
-    return to
+    return to.location
   }
 })
 ```
@@ -443,7 +460,21 @@ const App = () => {
 }
 ```
 
+## useMeta
 
+此 hook 允许你在组件中获取当前渲染路由的 meta 信息。
+
+```tsx
+import { useMeta } from 'link-router'
+
+const Home = () => {
+  const meta = useMeta()
+  
+  console.log(meta?.title)
+  
+  return (...)
+}
+```
 
 ## useWatchVisible
 
