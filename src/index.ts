@@ -3,6 +3,8 @@ export type { LinkProps } from './components/Link'
 export { default as Link } from './components/Link'
 export type { LookPageProps } from './components/LookPage'
 export { default as LookPage } from './components/LookPage'
+export type { NavigateProps } from './components/Navigate'
+export { default as Navigate } from './components/Navigate'
 export type { NavLinkProps, NavLinkRenderProps } from './components/NavLink'
 export { default as NavLink } from './components/NavLink'
 export { default as Outlet } from './components/Outlet'
@@ -21,6 +23,7 @@ export { default as useSetQuery } from './hooks/useSetQuery'
 export { default as useWatchVisibleEffect } from './hooks/useWatchVisibleEffect'
 export type {
   IndexRouteObject,
+  Location,
   MatchedRoute,
   Meta,
   NestRouteObject,
@@ -29,6 +32,7 @@ export type {
   RouteObject,
   RouteObjectBase,
   SearchParams,
+  To,
   WrapperProps,
 } from './types/index'
 export * from './utils/createRouter'

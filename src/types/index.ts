@@ -13,6 +13,8 @@ export type Params<Key extends string = string> = {
   readonly [key in Key]: string | undefined | string[]
 }
 
+export type { Location, To }
+
 export interface Path {
   pathname: Pathname
   search?: Search
