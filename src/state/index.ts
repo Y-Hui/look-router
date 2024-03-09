@@ -148,8 +148,12 @@ export default class LookRouter {
     const { pathname, search } = location
     const target = this.stack.find({ pathname: location.pathname, search: oldSearch })
     if (!target) {
-      // eslint-disable-next-line no-console
-      console.error(`Update search failed, ${pathname} route not found`)
+      if (__DEV__) {
+        throw Error(`Update search failed, ${pathname} route not found`)
+      } else {
+        // eslint-disable-next-line no-console
+        console.error(`Update search failed, ${pathname} route not found`)
+      }
       return
     }
     target.search = search
@@ -165,7 +169,12 @@ export default class LookRouter {
     const matches = getMatches({ pathname, search: search || '' }, this.flattenRoutes)
 
     if (!matches) {
-      console.error(Error(`${to.pathname} does not exist`))
+      if (__DEV__) {
+        throw Error(`${to.pathname} does not exist`)
+      } else {
+        // eslint-disable-next-line no-console
+        console.error(Error(`${to.pathname} does not exist`))
+      }
       return null
     }
 
