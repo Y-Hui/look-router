@@ -160,10 +160,50 @@ export default class LookRouter {
     this.instance.updateSearch(location)
   }
 
+  navigateCacheFirst = (to: Path): boolean | null => {
+    const { pathname, search } = to
+    const matches = getMatches({ pathname, search: search || '' }, this.flattenRoutes)
+
+    if (!matches) {
+      console.error(Error(`${to.pathname} does not exist`))
+      return null
+    }
+
+    const matched = matches[matches.length - 1]
+    const cached = this.stack.filter((item) => {
+      return item.pathname === matched.pathname
+    })
+
+    const isSameRoutePath = matches.every((item) => {
+      return item.route.path === matched.route.path
+    })
+    if (isSameRoutePath) {
+      // // 若 matches.routeKey 不是 cached.routeKey 的子集，放弃激活缓存页面，回退正常流程
+      // const isSubSet = matches.every(({ routeKey }) => {
+      //   const index = cached.findIndex((x) => x.routeKey === routeKey)
+      //   return index > -1
+      // })
+      if (matches.length !== cached.length) {
+        return false
+      }
+    }
+
+    const target = this.stack.findLastBy((item) => {
+      return item.pathname === matched.pathname
+    })
+    if (target) {
+      this.history.activeLastBy((x) => x.pathname === pathname)
+      this.stack.visibleWith(target)
+      this.instance.onlyVisible({ pathname, search: target.search || '' })
+      return true
+    }
+    return false
+  }
+
   private listenImpl = async (e: Update): Promise<MatchedRoute[] | undefined | null> => {
     const { location, action: currentAction } = e
 
-    if (currentAction === Action.UpdateSearch) {
+    if ([Action.UpdateSearch, Action.OnlyVisible].includes(currentAction)) {
       return
     }
 

@@ -12,6 +12,11 @@ export interface NavigateOpts {
    */
   switch?: boolean
   state?: unknown
+  /**
+   * 优先使用缓存。
+   * 若 path 一致则使用已缓存的页面。此参数将会忽略传入的 search
+   */
+  cacheFirst?: boolean
   /** 清空其他页面 */
   clean?: boolean
 }
@@ -25,8 +30,8 @@ export function useNavigate(): NavigateFunction {
   const { router } = useRouterCtx('useNavigate')
   const { instance } = useLookPageCtx('useNavigate')
 
-  return useLatestFn((to: To | number, opts: NavigateOpts = {}) => {
-    const { replace = false, state, clean } = opts
+  const navigate = useLatestFn((to: To | number, opts: NavigateOpts = {}) => {
+    const { replace = false, state, clean, cacheFirst = false } = opts
     if (typeof to === 'number') {
       router.go(to)
       return
@@ -35,6 +40,16 @@ export function useNavigate(): NavigateFunction {
     if (clean) {
       router.clean()
     }
+
+    if (cacheFirst) {
+      const result = router.navigateCacheFirst(nextTo)
+      // result 可能会返回 null
+      if (result === false) {
+        navigate(to, { ...opts, cacheFirst: false })
+      }
+      return
+    }
+
     if (opts?.switch) {
       router.switch(nextTo, state)
     } else if (replace) {
@@ -43,4 +58,6 @@ export function useNavigate(): NavigateFunction {
       router.push(nextTo, state)
     }
   })
+
+  return navigate
 }

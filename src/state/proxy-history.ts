@@ -1,4 +1,4 @@
-import type { History, Location } from 'history'
+import type { History, Location, To } from 'history'
 import { Action as HistoryAction } from 'history'
 
 import type { Blocker, Path } from '../types'
@@ -10,6 +10,7 @@ export const enum Action {
   Replace = 'REPLACE',
   Switch = 'SWITCH',
   UpdateSearch = 'UPDATE_SEARCH',
+  OnlyVisible = 'ONLY_VISIBLE',
 }
 
 export interface ProxyHistory
@@ -21,6 +22,7 @@ export interface ProxyHistory
   block: (blocker: Blocker) => () => void
   listen(listener: (update: Update) => void): () => void
   updateSearch: (location: Location) => void
+  onlyVisible: (to: To) => void
 }
 
 export interface Update {
@@ -158,6 +160,11 @@ export function proxyHistory(history: History): ProxyHistory {
       index = getIndex()
       currentAction = Action.UpdateSearch
       history.replace(location)
+    },
+    onlyVisible: (to) => {
+      index = getIndex()
+      currentAction = Action.OnlyVisible
+      history.replace(to)
     },
   }
   return result

@@ -52,6 +52,22 @@ class LookHistory {
     }
   }
 
+  activeLastBy = (predicate: (value: LookHistoryItem) => boolean) => {
+    let idx = -1
+    const index = findLastIndex(this.value, (row) => {
+      const res = findLastIndex(row, predicate)
+      if (res !== -1) {
+        idx = res
+      }
+      return res > -1
+    })
+    if (index > -1 && idx > -1) {
+      const target = this.value[index][idx]
+      this.value[index].splice(idx, 1)
+      this.value[index].push(target)
+    }
+  }
+
   popLast = () => {
     const value = this.value.pop()
     return value ? value[value.length - 1] : value

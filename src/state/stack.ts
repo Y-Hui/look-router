@@ -45,6 +45,19 @@ export default class LookStack {
     return this.stack.find((x) => LookStack.eq(args, x))
   }
 
+  filter = (
+    predicate: (value: LookStackPage, index: number, array: LookStackPage[]) => boolean,
+  ) => {
+    return this.stack.filter(predicate)
+  }
+
+  findLastBy = (
+    predicate: (item: LookStackPage, index: number) => boolean,
+  ): LookStackPage | undefined => {
+    const index = findLastIndex(this.stack, predicate)
+    return this.stack[index]
+  }
+
   findIndex = (
     callback: (value: LookStackPage, index: number, obj: LookStackPage[]) => unknown,
   ) => {
@@ -98,6 +111,17 @@ export default class LookStack {
         item.visible = true
       })
     }
+    this.notifyListener()
+  }
+
+  visibleWith = (page: LookStackPage) => {
+    this.stack.forEach((item) => {
+      item.visible = false
+    })
+    const returns = LookStack.getParents(page)
+    returns.forEach((item) => {
+      item.visible = true
+    })
     this.notifyListener()
   }
 

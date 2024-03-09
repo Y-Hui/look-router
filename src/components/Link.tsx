@@ -9,6 +9,7 @@ import type {
 import React, { forwardRef } from 'react'
 
 import { useHref } from '../hooks/useHref'
+import type { NavigateOpts } from '../hooks/useNavigate'
 import { useNavigate } from '../hooks/useNavigate'
 import { useRouterCtx } from './context'
 
@@ -16,16 +17,8 @@ type AnchorHTMLProps = DetailedHTMLProps<
   AnchorHTMLAttributes<HTMLAnchorElement>,
   HTMLAnchorElement
 >
-export interface LinkProps extends Omit<AnchorHTMLProps, 'href' | 'ref'> {
+export interface LinkProps extends Omit<AnchorHTMLProps, 'href' | 'ref'>, NavigateOpts {
   to: To
-  replace?: boolean
-  /**
-   * 保留当前页面，并切换到新的页面
-   * replace 与 switch 同时存在时 switch 权重更高
-   */
-  switch?: boolean
-  /** 清空其他页面 */
-  clean?: boolean
 }
 
 function Link(props: LinkProps, ref: ForwardedRef<HTMLAnchorElement>) {
@@ -36,6 +29,7 @@ function Link(props: LinkProps, ref: ForwardedRef<HTMLAnchorElement>) {
     children,
     switch: switchMode = false,
     clean = false,
+    cacheFirst,
     ...rest
   } = props
 
@@ -52,7 +46,7 @@ function Link(props: LinkProps, ref: ForwardedRef<HTMLAnchorElement>) {
         onClick?.(e)
         e.preventDefault()
         e.stopPropagation()
-        navigate(to, { replace, switch: switchMode, clean })
+        navigate(to, { replace, switch: switchMode, clean, cacheFirst })
       }}
       href={router.instance.createHref(to)}
     >
