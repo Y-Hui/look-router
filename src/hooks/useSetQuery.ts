@@ -13,7 +13,8 @@ function useSetQuery(): SetQueryFn {
 
   return useCallback(
     (action: SetStateAction<SearchParams>) => {
-      const { location } = router.instance
+      const { getLocation } = router.instance
+      const location = getLocation()
       const oldSearch = location.search
       const rawSearch = decodeSearch(oldSearch)
       const search = typeof action === 'function' ? action(rawSearch) : action

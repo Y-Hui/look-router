@@ -14,7 +14,7 @@ function useQuery<T>(formatter?: (searchParams: Params) => T): Params
 function useQuery<T>(formatter?: (searchParams: Params) => T): Params | T {
   const { router } = useRouterCtx('useQuery')
   const { instance } = useLookPageCtx('useQuery')
-  const [location, setValue] = useState(router.instance.location)
+  const [location, setValue] = useState(router.instance.getLocation)
 
   const instanceRef = useRef(instance)
   instanceRef.current = instance

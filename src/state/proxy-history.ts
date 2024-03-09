@@ -14,7 +14,8 @@ export const enum Action {
 }
 
 export interface ProxyHistory
-  extends Omit<History, 'listen' | 'block' | 'push' | 'replace'> {
+  extends Omit<History, 'listen' | 'block' | 'push' | 'replace' | 'location'> {
+  getLocation: () => Location
   switch: (to: Path, state?: unknown) => void
   push: (to: Path, state?: unknown) => void
   replace: (to: Path, state?: unknown) => void
@@ -47,9 +48,10 @@ export function proxyHistory(history: History): ProxyHistory {
 
   let currentAction = Action.Pop
 
+  const { location: _ignoreLocation, ...otherProps } = history
   const result: ProxyHistory = {
-    ...history,
-    get location() {
+    ...otherProps,
+    getLocation() {
       return history.location
     },
     listen(listener) {

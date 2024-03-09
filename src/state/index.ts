@@ -59,7 +59,7 @@ export default class LookRouter {
   private from?: Location
 
   private updateFrom = () => {
-    this.from = { ...this.instance.location }
+    this.from = { ...this.instance.getLocation() }
   }
 
   onBeforeEntering: (location: Location, matches?: MatchedRoute[]) => Promise<Path>
@@ -99,7 +99,7 @@ export default class LookRouter {
     this.onAfterEntering = (matches) => {
       onAfterEntering?.(
         {
-          location: this.instance.location,
+          location: this.instance.getLocation(),
           route: matches[matches.length - 1].route,
         },
         this.from,
@@ -136,7 +136,7 @@ export default class LookRouter {
         })
       }
     })
-    this.replace(this.instance.location, this.instance.location.state)
+    this.replace(this.instance.getLocation(), this.instance.getLocation().state)
   }
 
   clean = () => {

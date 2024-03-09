@@ -5,7 +5,7 @@ import { useRouterCtx } from '../components/context'
 export default function useLocation() {
   const { router } = useRouterCtx('useLocation')
 
-  const [value, setValue] = useState(router.instance.location)
+  const [value, setValue] = useState(router.instance.getLocation)
 
   useEffect(() => {
     return router.listen((e) => {
