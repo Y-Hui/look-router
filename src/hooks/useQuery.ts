@@ -1,8 +1,8 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
+import { useLookPageCtx, useRouterCtx } from '../components/context'
 import type { Params } from '../types'
 import { decodeSearch } from '../utils/search'
-import useLocation from './useLocation'
 
 /**
  * 获取当前路由下的 search 参数
@@ -12,7 +12,21 @@ function useQuery<T extends Params>(): Record<keyof T, string | undefined | stri
 function useQuery<T>(formatter: (searchParams: Params) => T): T
 function useQuery<T>(formatter?: (searchParams: Params) => T): Params
 function useQuery<T>(formatter?: (searchParams: Params) => T): Params | T {
-  const location = useLocation()
+  const { router } = useRouterCtx('useQuery')
+  const { instance } = useLookPageCtx('useQuery')
+  const [location, setValue] = useState(router.instance.location)
+
+  const instanceRef = useRef(instance)
+  instanceRef.current = instance
+
+  useEffect(() => {
+    return router.listen((e) => {
+      if (!instanceRef.current.visible) {
+        return
+      }
+      setValue(e)
+    })
+  }, [router])
 
   return useMemo(() => {
     if (typeof location.search !== 'string') {
