@@ -5,7 +5,7 @@ import { findLastIndex } from '../utils/findLastIndex'
 import { globalKey } from '../utils/globalKey'
 
 interface QueryItem {
-  key?: string
+  routeKey?: string
   pathname?: string
   search?: string
 }
@@ -30,8 +30,8 @@ export default class LookStack {
   }
 
   static eq(v1: QueryItem, v2: QueryItem) {
-    if (v1.key !== undefined && v2.key !== undefined) {
-      return v1.key === v2.key
+    if (v1.routeKey !== undefined && v2.routeKey !== undefined) {
+      return v1.routeKey === v2.routeKey
     }
     return v1.pathname === v2.pathname && v1.search === v2.search
   }
@@ -96,7 +96,7 @@ export default class LookStack {
     this.stack[index] = value
   }
 
-  visible = (args: { key?: string; pathname: string; search?: string }) => {
+  visible = (args: { routeKey: string; pathname: string; search?: string }) => {
     this.stack.forEach((item) => {
       item.visible = false
     })
