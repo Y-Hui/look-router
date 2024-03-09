@@ -1,6 +1,13 @@
 import { createRouter } from 'look-router'
 import { lazy } from 'react'
 
+declare module 'look-router' {
+  interface Meta {
+    /** 网页标题 */
+    title: string
+  }
+}
+
 export const router = createRouter({
   onAfterEntering(to) {
     const { route } = to

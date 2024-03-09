@@ -18,6 +18,16 @@ look-router 的目标是：在移动端单页应用（SPA）中切换路由时�
 
 使用 look-router 的 [DEMO](https://y-hui.github.io/look-router/demo-dist)
 
+## 安装
+
+```bash
+pnpm add look-router
+
+yarn add look-router
+
+npm install look-router
+```
+
 ## createRouter
 
 ### 配置路由
@@ -234,9 +244,26 @@ const App = () => {
 }
 ```
 
+## Navigate
+
+Navigate 是 useNavigate 的一层封装，允许你在渲染阶段导航到其他页面。
+
+```tsx
+import { Navigate } from 'link-router'
+
+const App = () => {
+  
+  if (needLogin) {
+    return <Navigate to="/login" />
+  }
+  
+  return (...)
+}
+```
+
 ## WillPop
 
-WillPop 允许您阻止用户离开当前页面，并向他们提供自定义提示。
+WillPop 允许你阻止用户离开当前页面，并向他们提供自定义提示。
 
 若不需要拦截，依然需要调用 `proceed` 函数。
 
@@ -358,6 +385,7 @@ const App = () => {
     navigate("/home", { replace: true }) // 不保留当前页面，重定向到新页面
     navigate("/home", { switch: true }) // 缓存当前页面，并重定向到新页面
     navigate("/home", { clean: true }) // 清空已缓存的页面，并跳转新页面
+    navigate("/home", { cacheFirst: true }) // 优先使用已缓存的页面
   }
   
   return (...)
@@ -392,7 +420,7 @@ const App = () => {
 
 ## useQuery
 
-此 hook 用于获取 search 参数。
+此 hook 用于获取 search 参数。仅在页面可见才会处理地址栏中 search 的更新。
 
 ```tsx
 import { useQuery } from 'link-router'
