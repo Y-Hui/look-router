@@ -38,7 +38,7 @@ async function main() {
       output: {
         file: `${output}/index.esm.js`,
         format: 'esm',
-        sourcemap: false,
+        sourcemap: true,
         exports: 'named',
         preserveModules: false,
         externalLiveBindings: true,
@@ -75,7 +75,7 @@ async function main() {
       output: {
         file: `${output}/index.js`,
         format: 'cjs',
-        sourcemap: false,
+        sourcemap: true,
         exports: 'named',
         preserveModules: false,
         externalLiveBindings: true,

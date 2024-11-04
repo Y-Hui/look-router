@@ -1,5 +1,5 @@
 import type { Location } from 'history'
-import type { FC, ReactNode } from 'react'
+import type { FC, HTMLAttributes } from 'react'
 import React, { useEffect, useMemo } from 'react'
 import { useSyncExternalStore } from 'use-sync-external-store/shim'
 
@@ -15,14 +15,14 @@ export interface RouterChangeEventArgs {
   matches?: MatchedRoute[]
 }
 
-export interface RouterViewProps {
+export interface RouterViewProps
+  extends Omit<HTMLAttributes<HTMLDivElement>, 'onChange'> {
   router: LookRouter
-  children?: ReactNode
   onChange?: (e: RouterChangeEventArgs) => void
 }
 
 const RouterView: FC<RouterViewProps> = (props) => {
-  const { router, onChange: onChangeImpl, children } = props
+  const { router, onChange: onChangeImpl, children, className, style, ...rest } = props
 
   const routerStack = useSyncExternalStore(
     router.stack.addListener,
@@ -42,7 +42,11 @@ const RouterView: FC<RouterViewProps> = (props) => {
   }, [router, onChange])
 
   return (
-    <div className="look-router-hosts" style={{ overflow: 'hidden', height: '100vh' }}>
+    <div
+      {...rest}
+      className={['look-router-hosts', className].join(' ')}
+      style={{ ...style, overflow: 'hidden', height: '100vh' }}
+    >
       <RouterViewCtx.Provider value={state}>
         {children}
         {routerStack.map((item) => {
