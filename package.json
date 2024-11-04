@@ -1,6 +1,6 @@
 {
   "name": "look-router",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Page cache routing for React",
   "keywords": [
     "react",
