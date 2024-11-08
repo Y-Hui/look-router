@@ -122,6 +122,10 @@ export default class LookStack {
     returns.forEach((item) => {
       item.visible = true
     })
+    // 修改 visible 后 this.stack 依然是同一个内存地址，导致 useSyncExternalStore 不触发更新
+    // 所以返回一个新对象，以便正确渲染
+    // 场景：设置 cacheFirst 并使用 switch 模式切换 TabBar（路由需要search）
+    this.setStack([...this.stack])
     this.notifyListener()
   }
 
